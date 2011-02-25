@@ -26,7 +26,7 @@ import org.springframework.data.redis.samples.retwis.PostIdGenerator;
  * 
  * @author Costin Leau
  */
-public class LongGenerator implements PostIdGenerator<Long> {
+public class LongGenerator implements PostIdGenerator {
 	private final RedisAtomicLong counter;
 
 	public LongGenerator(String counterName, RedisOperations<String, Long> operations) {
@@ -39,7 +39,7 @@ public class LongGenerator implements PostIdGenerator<Long> {
 	}
 
 	@Override
-	public Long generate() {
-		return counter.incrementAndGet();
+	public String generate() {
+		return String.valueOf(counter.incrementAndGet());
 	}
 }

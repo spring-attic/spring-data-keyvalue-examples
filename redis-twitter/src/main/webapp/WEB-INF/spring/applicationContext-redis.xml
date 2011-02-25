@@ -9,6 +9,10 @@
 	<!-- Configurer that replaces ${...} placeholders with values from a properties file -->
 	<context:property-placeholder location="classpath:redis.properties"/>
 
+	<context:annotation-config />
+
+	<context:component-scan base-package="org.springframework.data.redis.samples"/>
+
 	<bean id="connectionFactory" class="org.springframework.data.keyvalue.redis.connection.jedis.JedisConnectionFactory"
 		p:host-name="${redis.host}" p:port="${redis.port}" p:password="${redis.pass}"/>
 	

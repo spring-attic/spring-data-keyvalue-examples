@@ -14,26 +14,23 @@
 	-->
 	<context:component-scan base-package="org.springframework.data.redis.samples.retwis.web"/>
 
-	<!--
-		- The form-based controllers within this application provide @RequestMapping 
-		- annotations at the type level for path mapping URLs and @RequestMapping 
-		- at the method level for request type mappings (e.g., GET and POST). 
-		- In contrast, ClinicController - which is not form-based - provides 
-		- @RequestMapping only at the method level for path mapping URLs.
-		-
-		- DefaultAnnotationHandlerMapping is driven by these annotations and is 
-		- enabled by default with Java 5+.
+	<!-- add login interceptor 
+	<bean id="handlerMapping" class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+	  <property name="interceptors">
+	    <bean class="org.springframework.data.redis.samples.retwis.web.CookieInterceptor"/>
+	  </property>
+	</bean>
 	-->
 	
 	<!--
 		- This bean processes annotated handler methods, applying Retwis-specific PropertyEditors
 		- for request parameter binding. It overrides the default AnnotationMethodHandlerAdapter.
-	-->
 	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
 		<property name="webBindingInitializer">
 			<bean class="org.springframework.samples.petclinic.web.ClinicBindingInitializer"/>
 		</property>
 	</bean>
+	-->
 
 	<!--
 		- This bean resolves specific types of exceptions to corresponding logical 
@@ -56,7 +53,6 @@
 		- it will delegate to the InternalResourceViewResolver's JstlView, otherwise to the
 		- BeanNameViewResolver. Note the use of the expression language to refer to the contentType
 		- property of the vets view bean, setting it to 'application/vnd.springsource.samples.petclinic+xml'.
-	-->
 	<bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
 		<property name="mediaTypes">
 			<map>
@@ -66,6 +62,7 @@
 		</property>
 		<property name="order" value="0"/>
 	</bean>
+	-->
 	
 	<!--
 		- The BeanNameViewResolver is used to pick up the visits view name (below).

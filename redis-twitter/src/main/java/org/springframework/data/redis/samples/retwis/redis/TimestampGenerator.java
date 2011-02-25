@@ -23,11 +23,11 @@ import org.springframework.data.redis.samples.retwis.PostIdGenerator;
  * 
  * @author Costin Leau
  */
-public class TimestampGenerator implements PostIdGenerator<Long> {
+public class TimestampGenerator implements PostIdGenerator {
 
 	@Override
 	// potentially strip the year and add a UUID instead
-	public Long generate() {
-		return System.currentTimeMillis();
+	public String generate() {
+		return String.valueOf(System.currentTimeMillis());
 	}
 }

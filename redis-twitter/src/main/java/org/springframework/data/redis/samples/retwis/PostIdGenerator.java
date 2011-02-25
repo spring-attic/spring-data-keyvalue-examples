@@ -15,15 +15,15 @@
  */
 package org.springframework.data.redis.samples.retwis;
 
-import java.io.Serializable;
 
 /**
  * LongGenerator interface for generating posts id.
  * Used as a strategy for plugging in different implementations.
  * 
+ * Always returns a String for simplicity. 
  * @author Costin Leau
  */
-public interface PostIdGenerator<T extends Serializable> {
+public interface PostIdGenerator {
 
-	T generate();
+	String generate();
 }

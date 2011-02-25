@@ -15,17 +15,21 @@
  */
 package org.springframework.data.redis.samples.retwis;
 
-import java.util.Collection;
-
 /**
- * High-level Twitter-like interface.
+ * Basic object indicating a range of objects to retrieve. Default is 10 objects (starting at zero).
  * 
  * @author Costin Leau
  */
-public interface Twitter {
+public class Range {
 
-	Object mentions(String username);
+	public int start = 0;
+	public int end = 9;
 
-	Collection<String> timeline();
+	public Range() {
+	};
 
+	public Range(int start, int end) {
+		this.start = start;
+		this.end = end;
+	}
 }
