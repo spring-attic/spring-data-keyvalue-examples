@@ -7,12 +7,13 @@ apply plugin: "java"
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: "maven"
-	
+apply plugin: 'war'	
 	
 group = 'org.springframework.data'
 
 sourceCompatibility = 1.6
 version = '1.0.BUILD-SNAPSHOT'
+archivesBaseName = "retwis-java"
 
 repositories {
   mavenLocal()
@@ -31,6 +32,7 @@ dependencies {
 	runtime "log4j:log4j:$log4jVersion"
 	runtime "org.slf4j:slf4j-log4j12:$slf4jVersion"
 	compile "org.springframework.data:spring-data-keyvalue-core:$springDataKVVersion"
+	compile "org.springframework:spring-webmvc:$springVersion"
 	compile("javax.annotation:jsr250-api:1.0") { optional = true }
 	// Testing
 	testCompile "junit:junit:$junitVersion"
