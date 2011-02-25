@@ -21,6 +21,7 @@ repositories {
 	mavenRepo name: "ext-snapshots", urls: "http://springframework.svn.sourceforge.net/svnroot/springframework/repos/repo-ext/"
   // Public Spring artefacts
   mavenRepo name: "springsource-org-release", urls: "http://repository.springsource.com/maven/bundles/release"
+  mavenRepo name: "springsource-org-external", urls: "http://repository.springsource.com/maven/bundles/external"
   mavenRepo name: "spring-release", urls: "http://maven.springframework.org/release"
   mavenRepo name: "spring-milestone", urls: "http://maven.springframework.org/milestone"
   mavenRepo name: "spring-snapshot", urls: "http://maven.springframework.org/snapshot"
@@ -31,9 +32,13 @@ dependencies {
 	compile "org.slf4j:jcl-over-slf4j:$slf4jVersion"
 	runtime "log4j:log4j:$log4jVersion"
 	runtime "org.slf4j:slf4j-log4j12:$slf4jVersion"
-	compile "org.springframework.data:spring-data-keyvalue-core:$springDataKVVersion"
+	compile "org.springframework.data:spring-data-redis:$springDataKVVersion"
 	compile "org.springframework:spring-webmvc:$springVersion"
-	compile("javax.annotation:jsr250-api:1.0") { optional = true }
+	compile "javax.inject:com.springsource.javax.inject:1.0.0"
+	providedCompile "javax.servlet:com.springsource.javax.servlet:2.4.0"
+	providedCompile "javax.servlet:com.springsource.javax.servlet.jsp:2.1.0"
+	compile "javax.servlet:com.springsource.javax.servlet.jsp.jstl:1.2.0"
+	compile "org.apache.taglibs:com.springsource.org.apache.taglibs.standard:1.1.2"
 	// Testing
 	testCompile "junit:junit:$junitVersion"
 	testCompile "org.springframework:spring-test:$springVersion"
