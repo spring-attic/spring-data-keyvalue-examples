@@ -15,16 +15,20 @@
  */
 package org.springframework.data.redis.samples.retwis.web;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.samples.Post;
 import org.springframework.data.redis.samples.retwis.Range;
 import org.springframework.data.redis.samples.retwis.redis.RedisTwitter;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -51,43 +55,43 @@ public class RetwisController {
 	}
 
 	@RequestMapping("/signUp")
-	public ModelAndView signUp(@RequestParam String name, @RequestParam String pass, @RequestParam String pass2) {
+	public String signUp(@RequestParam String name, @RequestParam String pass, @RequestParam String pass2) {
 		// FIXME: add pass check
 		twitter.addUser(name, pass);
-		return home(name, null);
+		return "redirect:/!" + name;
 	}
 
 	@RequestMapping("/signIn")
-	public ModelAndView signIn(@RequestParam String name, @RequestParam String pass) {
+	public String signIn(@RequestParam String name, @RequestParam String pass, HttpServletResponse response) {
+		// add tracing cookie
 		if (twitter.auth(name, pass)) {
-			return posts(name);
+			Cookie cookie = new Cookie(CookieInterceptor.RETWIS_COOKIE, twitter.addAuth(name));
+			response.addCookie(cookie);
+			return "redirect:/!" + name;
 		}
 
-		ModelAndView mav = new ModelAndView("signin");
-		return mav;
+		// go back to sign in screen
+		return "signin";
 	}
 
-	@RequestMapping("/home")
-	public ModelAndView home(String name, @RequestParam String content) {
-
-		if (StringUtils.hasText(content)) {
-			// get username
-			twitter.post(name, content);
-		}
+	@RequestMapping(value = "/!{username}", method = RequestMethod.GET)
+	public ModelAndView posts(@PathVariable String username) {
+		System.out.println("displaying posts for user " + username);
 
 		ModelAndView mav = new ModelAndView("home");
-		mav.addObject("name", name);
-		mav.addObject("posts", twitter.getPosts(name, new Range()));
+		mav.addObject("post", new Post());
+		mav.addObject("name", username);
+		mav.addObject("posts", twitter.getPosts(username, new Range()));
 		return mav;
 	}
 
-	@RequestMapping("/#{username}")
-	public ModelAndView posts(@PathVariable String username) {
-		ModelAndView mav = new ModelAndView("posts");
-		return mav;
+	@RequestMapping(value = "/!{username}", method = RequestMethod.POST)
+	public ModelAndView posts(@PathVariable String username, @ModelAttribute Post post) {
+		twitter.post(username, post);
+		return posts(username);
 	}
 
-	@RequestMapping("/#{username}/mentions")
+	@RequestMapping("/!{username}/mentions")
 	public ModelAndView mentions(@PathVariable String username) {
 		ModelAndView mav = new ModelAndView("mentions");
 		mav.addObject("mentions", twitter.getMentions(username, new Range()));

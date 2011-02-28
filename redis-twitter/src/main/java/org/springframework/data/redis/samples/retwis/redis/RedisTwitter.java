@@ -15,9 +15,11 @@
  */
 package org.springframework.data.redis.samples.retwis.redis;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -27,8 +29,10 @@ import org.springframework.data.keyvalue.redis.core.StringRedisTemplate;
 import org.springframework.data.keyvalue.redis.core.ValueOperations;
 import org.springframework.data.keyvalue.redis.support.atomic.RedisAtomicLong;
 import org.springframework.data.keyvalue.redis.support.collections.DefaultRedisList;
+import org.springframework.data.keyvalue.redis.support.collections.DefaultRedisMap;
 import org.springframework.data.keyvalue.redis.support.collections.DefaultRedisSet;
 import org.springframework.data.keyvalue.redis.support.collections.RedisList;
+import org.springframework.data.redis.samples.Post;
 import org.springframework.data.redis.samples.User;
 import org.springframework.data.redis.samples.retwis.PostIdGenerator;
 import org.springframework.data.redis.samples.retwis.Range;
@@ -52,7 +56,6 @@ public class RedisTwitter {
 	// track users
 	private RedisList<String> users;
 	// time-line
-	// FIXME: unwrap the stored entries as uid and post
 	private final RedisList<String> timeline;
 
 	@Inject
@@ -88,12 +91,41 @@ public class RedisTwitter {
 		// track username
 		users.add(name);
 
+		addAuth(name);
+
 		return new User(name, password);
 	}
 
-	public List<String> getPosts(String username, Range range) {
+	/**
+	 * Adds auth key to Redis for the given username.
+	 * 
+	 * @param uid
+	 * @return
+	 */
+	public String addAuth(String name) {
+		String uid = findUid(name);
+		// add random auth key relation
+		String auth = UUID.randomUUID().toString();
+		valueOps.set("uid:" + uid + ":auth", auth);
+		valueOps.set("auth:" + auth, uid);
+		return auth;
+	}
+
+	public List<Post> getPosts(String username, Range range) {
 		String uid = findUid(username);
-		return new DefaultRedisList<String>("posts:" + uid, template).range(range.start, range.end);
+		List<String> pids = new DefaultRedisList<String>("posts:" + uid, template).range(range.start, range.end);
+
+		List<Post> posts = new ArrayList<Post>(pids.size());
+		//FIXME: optimize this N+1
+		for (String pid : pids) {
+			posts.add(loadPost(pid));
+		}
+
+		return posts;
+	}
+
+	private Post loadPost(String pid) {
+		return new Post().fromMap(new DefaultRedisMap<String, String>("pid:" + pid, template));
 	}
 
 	public Set<String> getFollowers(String username) {
@@ -139,8 +171,19 @@ public class RedisTwitter {
 		return false;
 	}
 
-	public void post(String username, String content) {
+	public void post(String username, Post post) {
 		String uid = findUid(username);
-		new DefaultRedisList<String>("posts:" + uid, template).add(content);
+		post.setUid(uid);
+		String pid = postIdGenerator.generate();
+		// add post
+		new DefaultRedisMap<String, Object>("pid:" + pid, template).putAll(post.asMap());
+
+		// add links
+		new DefaultRedisList<String>("posts:" + uid, template).addFirst(pid);
+		timeline.addFirst(pid);
+	}
+
+	public String getUserNameForAuth(String value) {
+		return "LOGGED IN";
 	}
 }

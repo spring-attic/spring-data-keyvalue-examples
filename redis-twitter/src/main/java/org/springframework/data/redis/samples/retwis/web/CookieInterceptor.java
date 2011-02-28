@@ -20,6 +20,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.data.redis.samples.retwis.RetwisSecurity;
 import org.springframework.data.redis.samples.retwis.redis.RedisTwitter;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -32,7 +33,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
  */
 public class CookieInterceptor extends HandlerInterceptorAdapter {
 
-	private static final String RETWIS_COOKIE = "retwisauth";
+	public static final String RETWIS_COOKIE = "retwisauth";
 
 	@Inject
 	private RedisTwitter twitter;
@@ -40,24 +41,47 @@ public class CookieInterceptor extends HandlerInterceptorAdapter {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		// all non-root requests get analyzed
-		System.out.println("Intercepting " + request.getPathInfo() + "|" + request.getContextPath()
-				+ request.getRequestURI());
-		if (StringUtils.hasText(request.getPathInfo())) {
+		String requestURI = request.getRequestURI();
+		String context = request.getContextPath();
+		System.out.println("Intercepting " + requestURI + " context " + context + "|" + request.getPathInfo() + "|"
+				+ request.getParameterMap() + "|" + request.getQueryString() + "|" + request.getParameterMap());
+		
+		if (!context.endsWith("/")) {
+			context = context + "/";
+		}
+		// login page - we don't intercept it
+		if (requestURI.equals(context) || requestURI.endsWith("/signUp") || requestURI.endsWith("/signIn")) {
+			System.out.println("Skipping interception for signup page");
+			return true;
+		}
+		System.out.println("Checking auth");
+		if (StringUtils.hasText(requestURI)) {
 			Cookie[] cookies = request.getCookies();
 
 			if (!ObjectUtils.isEmpty(cookies)) {
 				for (Cookie cookie : cookies) {
 					if (RETWIS_COOKIE.equals(cookie.getName())) {
 						if (twitter.isAuthValid(cookie.getValue())) {
+							System.out.println("User authenticated");
+							RetwisSecurity.setName(twitter.getUserNameForAuth(cookie.getValue()));
 							return true;
 						}
 					}
 				}
 			}
-			response.sendRedirect("");
+
+			System.out.println("Interception redirect page to " + context);
+			response.sendRedirect(context);
 			return false;
 		}
 
 		return true;
 	}
+
+	@Override
+	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
+			throws Exception {
+		RetwisSecurity.setName(null);
+	}
+
 }
