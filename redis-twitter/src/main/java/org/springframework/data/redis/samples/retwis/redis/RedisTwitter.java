@@ -16,6 +16,7 @@
 package org.springframework.data.redis.samples.retwis.redis;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -33,7 +34,6 @@ import org.springframework.data.keyvalue.redis.support.collections.DefaultRedisM
 import org.springframework.data.keyvalue.redis.support.collections.DefaultRedisSet;
 import org.springframework.data.keyvalue.redis.support.collections.RedisList;
 import org.springframework.data.redis.samples.Post;
-import org.springframework.data.redis.samples.User;
 import org.springframework.data.redis.samples.retwis.PostIdGenerator;
 import org.springframework.data.redis.samples.retwis.Range;
 import org.springframework.util.StringUtils;
@@ -75,7 +75,7 @@ public class RedisTwitter {
 	 * @param user
 	 * @return
 	 */
-	public User addUser(String name, String password) {
+	public String addUser(String name, String password) {
 		String uid = String.valueOf(userIdCounter.incrementAndGet());
 
 		// FIXME: add functionality into the template
@@ -91,31 +91,19 @@ public class RedisTwitter {
 		// track username
 		users.add(name);
 
-		addAuth(name);
-
-		return new User(name, password);
-	}
-
-	/**
-	 * Adds auth key to Redis for the given username.
-	 * 
-	 * @param uid
-	 * @return
-	 */
-	public String addAuth(String name) {
-		String uid = findUid(name);
-		// add random auth key relation
-		String auth = UUID.randomUUID().toString();
-		valueOps.set("uid:" + uid + ":auth", auth);
-		valueOps.set("auth:" + auth, uid);
-		return auth;
+		return addAuth(name);
 	}
 
 	public List<Post> getPosts(String username, Range range) {
 		String uid = findUid(username);
 		List<String> pids = new DefaultRedisList<String>("posts:" + uid, template).range(range.start, range.end);
+		return loadPosts(pids);
+	}
 
+	private List<Post> loadPosts(Collection<String> pids) {
 		List<Post> posts = new ArrayList<Post>(pids.size());
+
+		//FIXME: add basic mapping mechanism
 		//FIXME: optimize this N+1
 		for (String pid : pids) {
 			posts.add(loadPost(pid));
@@ -125,7 +113,11 @@ public class RedisTwitter {
 	}
 
 	private Post loadPost(String pid) {
-		return new Post().fromMap(new DefaultRedisMap<String, String>("pid:" + pid, template));
+		Post post = new Post().fromMap(new DefaultRedisMap<String, String>("pid:" + pid, template));
+		post.setName(findName(post.getUid()));
+		post.setReplyName(findName(post.getReplyUid()));
+		post.setPid(pid);
+		return post;
 	}
 
 	public Set<String> getFollowers(String username) {
@@ -143,16 +135,40 @@ public class RedisTwitter {
 		return new DefaultRedisList<String>("uid:" + uid + ":mentions", template).range(range.start, range.end);
 	}
 
-	public Collection<String> timeline(Range range) {
-		return timeline.range(range.start, range.end);
+	public Collection<Post> timeline(Range range) {
+		Collection<String> pids = timeline.range(range.start, range.end);
+		return loadPosts(pids);
 	}
 
-	public Collection<String> newUsers(int start, int end) {
-		return users.range(start, end);
+	public Collection<String> newUsers(Range range) {
+		return users.range(range.start, range.end);
+	}
+
+
+	public void post(String username, Post post) {
+		String uid = findUid(username);
+		post.setUid(uid);
+		String pid = postIdGenerator.generate();
+		// add post
+		new DefaultRedisMap<String, Object>("pid:" + pid, template).putAll(post.asMap());
+
+		// add links
+		new DefaultRedisList<String>("posts:" + uid, template).addFirst(pid);
+		timeline.addFirst(pid);
 	}
 
 	private String findUid(String name) {
 		return valueOps.get("user:" + name + ":uid");
+	}
+
+
+	public boolean isUserValid(String name) {
+		return template.hasKey("user:" + name + ":uid");
+	}
+
+	private String findName(String uid) {
+		BoundHashOperations<String, String, String> userOps = template.boundHashOps("uid:" + uid);
+		return userOps.get("name");
 	}
 
 	public boolean isAuthValid(String value) {
@@ -171,19 +187,33 @@ public class RedisTwitter {
 		return false;
 	}
 
-	public void post(String username, Post post) {
-		String uid = findUid(username);
-		post.setUid(uid);
-		String pid = postIdGenerator.generate();
-		// add post
-		new DefaultRedisMap<String, Object>("pid:" + pid, template).putAll(post.asMap());
-
-		// add links
-		new DefaultRedisList<String>("posts:" + uid, template).addFirst(pid);
-		timeline.addFirst(pid);
-	}
 
 	public String getUserNameForAuth(String value) {
-		return "LOGGED IN";
+		String uid = valueOps.get("auth:" + value);
+		return findName(uid);
+	}
+
+	/**
+	 * Adds auth key to Redis for the given username.
+	 * 
+	 * @param uid
+	 * @return
+	 */
+	public String addAuth(String name) {
+		String uid = findUid(name);
+		// add random auth key relation
+		String auth = UUID.randomUUID().toString();
+		valueOps.set("uid:" + uid + ":auth", auth);
+		valueOps.set("auth:" + auth, uid);
+		return auth;
+	}
+
+	public void deleteAuth(String user) {
+		String uid = findUid(user);
+
+		String authKey = "uid:"+uid+":auth";
+		String auth = valueOps.get(authKey);
+		
+		template.delete(Arrays.asList(authKey, "auth:" + auth));
 	}
 }

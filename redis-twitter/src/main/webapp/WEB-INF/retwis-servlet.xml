@@ -19,21 +19,10 @@
 
 	<!-- add cookie interceptor -->
 	<mvc:interceptors>
-	    <mvc:interceptor>
-	        <mvc:mapping path="*"/>
-	        <bean class="org.example.SecurityInterceptor" />
-	    </mvc:interceptor>
+        <bean class="org.springframework.data.redis.samples.retwis.web.CookieInterceptor" />
 	</mvc:interceptors>
 
-	<!--
-		- This bean processes annotated handler methods, applying Retwis-specific PropertyEditors
-		- for request parameter binding. It overrides the default AnnotationMethodHandlerAdapter.
-	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
-		<property name="webBindingInitializer">
-			<bean class="org.springframework.samples.petclinic.web.ClinicBindingInitializer"/>
-		</property>
-	</bean>
-	-->
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerExceptionResolver"/>
 
 	<!--
 		- This bean resolves specific types of exceptions to corresponding logical 
@@ -44,11 +33,12 @@
 	<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
 		<property name="exceptionMappings">
 			<props>
-				<prop key="org.springframework.web.servlet.PageNotFound">pageNotFound</prop>
+				<prop key="org.springframework.web.servlet.PageNotFound">uncaughtException</prop>
 				<prop key="org.springframework.dao.DataAccessException">dataAccessFailure</prop>
 			</props>
 		</property>
 	</bean>
+	
 
 	<!--
 		- This view resolver delegates to the InternalResourceViewResolver and BeanNameViewResolver,

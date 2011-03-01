@@ -15,6 +15,9 @@
  */
 package org.springframework.data.redis.samples.retwis.web;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,9 +25,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.samples.Post;
 import org.springframework.data.redis.samples.retwis.Range;
+import org.springframework.data.redis.samples.retwis.RetwisSecurity;
 import org.springframework.data.redis.samples.retwis.redis.RedisTwitter;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,15 +53,19 @@ public class RetwisController {
 	}
 
 	@RequestMapping("/")
-	public String root(HttpServletRequest request) {
-		// no cookie means signup page
+	public String root() {
+		// FIXME: redirect from / authenticated users
+		// land page is signin
+		// in case the user is authenticated, the cookie should interceptor redirects accordingly
 		return "signin";
 	}
 
 	@RequestMapping("/signUp")
-	public String signUp(@RequestParam String name, @RequestParam String pass, @RequestParam String pass2) {
+	public String signUp(@RequestParam String name, @RequestParam String pass, @RequestParam String pass2, HttpServletResponse response) {
 		// FIXME: add pass check
-		twitter.addUser(name, pass);
+		String auth = twitter.addUser(name, pass);
+		addAuthCookie(auth, name, response);
+
 		return "redirect:/!" + name;
 	}
 
@@ -65,18 +73,26 @@ public class RetwisController {
 	public String signIn(@RequestParam String name, @RequestParam String pass, HttpServletResponse response) {
 		// add tracing cookie
 		if (twitter.auth(name, pass)) {
-			Cookie cookie = new Cookie(CookieInterceptor.RETWIS_COOKIE, twitter.addAuth(name));
-			response.addCookie(cookie);
+			addAuthCookie(twitter.addAuth(name), name, response);
 			return "redirect:/!" + name;
 		}
-
 		// go back to sign in screen
 		return "signin";
 	}
 
+	private void addAuthCookie(String auth, String name, HttpServletResponse response) {
+		RetwisSecurity.setName(name);
+
+		Cookie cookie = new Cookie(CookieInterceptor.RETWIS_COOKIE, auth);
+		cookie.setComment("Retwis-J demo");
+		// cookie valid for up to 1 week
+		cookie.setMaxAge(60 * 60 * 24 * 7);
+		response.addCookie(cookie);
+	}
+
 	@RequestMapping(value = "/!{username}", method = RequestMethod.GET)
 	public ModelAndView posts(@PathVariable String username) {
-		System.out.println("displaying posts for user " + username);
+		checkUser(username);
 
 		ModelAndView mav = new ModelAndView("home");
 		mav.addObject("post", new Post());
@@ -87,19 +103,47 @@ public class RetwisController {
 
 	@RequestMapping(value = "/!{username}", method = RequestMethod.POST)
 	public ModelAndView posts(@PathVariable String username, @ModelAttribute Post post) {
+		checkUser(username);
+
 		twitter.post(username, post);
 		return posts(username);
 	}
 
 	@RequestMapping("/!{username}/mentions")
 	public ModelAndView mentions(@PathVariable String username) {
+		checkUser(username);
+
 		ModelAndView mav = new ModelAndView("mentions");
 		mav.addObject("mentions", twitter.getMentions(username, new Range()));
 		return mav;
 	}
 
 	@RequestMapping("/timeline")
-	public ModelMap timeline() {
-		return new ModelMap(twitter.timeline(new Range()));
+	public Map timeline() {
+		Map map = new HashMap();
+		map.put("posts", twitter.timeline(new Range()));
+		map.put("users", twitter.newUsers(new Range()));
+		return map;
+	}
+
+	@RequestMapping("/logout")
+	public String logout() {
+		String user = RetwisSecurity.getName();
+		// invalidate auth
+		twitter.deleteAuth(user);
+		return "redirect:/";
+	}
+
+	private void checkUser(String username) {
+		if (!twitter.isUserValid(username)) {
+			throw new NoSuchUserException(username);
+		}
+	}
+
+	@ExceptionHandler(NoSuchUserException.class)
+	public ModelAndView handleNoUserException(NoSuchUserException ex, HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView("nouser");
+		mav.addObject("user", ex.getUsername());
+		return mav;
 	}
 }

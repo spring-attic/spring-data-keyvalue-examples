@@ -13,33 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.data.redis.samples.retwis;
-
-import org.springframework.core.NamedThreadLocal;
-import org.springframework.util.StringUtils;
+package org.springframework.data.redis.samples.retwis.web;
 
 /**
- * Simple security class that saves the local user info. 
+ * Exception thrown when the controller is invoked with an invalid user.
  * 
  * @author Costin Leau
  */
-public abstract class RetwisSecurity {
+public class NoSuchUserException extends RuntimeException {
 
-	private static final ThreadLocal<String> user = new NamedThreadLocal<String>("Retwis-id");
+	private final String username;
 
-	public static String getName() {
-		return user.get();
+	public NoSuchUserException(String username) {
+		super("Invalid user " + username);
+		this.username = username;
 	}
 
-	public static void setName(String name) {
-		user.set(name);
-	}
-
-	public static boolean isSignedIn() {
-		return StringUtils.hasText(getName());
-	}
-
-	public static void clean() {
-		setName(null);
+	/**
+	 * Returns the username.
+	 *
+	 * @return Returns the username
+	 */
+	public String getUsername() {
+		return username;
 	}
 }

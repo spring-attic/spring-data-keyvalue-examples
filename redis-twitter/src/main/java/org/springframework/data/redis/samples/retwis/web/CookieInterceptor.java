@@ -43,18 +43,14 @@ public class CookieInterceptor extends HandlerInterceptorAdapter {
 		// all non-root requests get analyzed
 		String requestURI = request.getRequestURI();
 		String context = request.getContextPath();
-		System.out.println("Intercepting " + requestURI + " context " + context + "|" + request.getPathInfo() + "|"
-				+ request.getParameterMap() + "|" + request.getQueryString() + "|" + request.getParameterMap());
 		
 		if (!context.endsWith("/")) {
 			context = context + "/";
 		}
 		// login page - we don't intercept it
 		if (requestURI.equals(context) || requestURI.endsWith("/signUp") || requestURI.endsWith("/signIn")) {
-			System.out.println("Skipping interception for signup page");
 			return true;
 		}
-		System.out.println("Checking auth");
 		if (StringUtils.hasText(requestURI)) {
 			Cookie[] cookies = request.getCookies();
 
@@ -62,7 +58,6 @@ public class CookieInterceptor extends HandlerInterceptorAdapter {
 				for (Cookie cookie : cookies) {
 					if (RETWIS_COOKIE.equals(cookie.getName())) {
 						if (twitter.isAuthValid(cookie.getValue())) {
-							System.out.println("User authenticated");
 							RetwisSecurity.setName(twitter.getUserNameForAuth(cookie.getValue()));
 							return true;
 						}
@@ -70,7 +65,6 @@ public class CookieInterceptor extends HandlerInterceptorAdapter {
 				}
 			}
 
-			System.out.println("Interception redirect page to " + context);
 			response.sendRedirect(context);
 			return false;
 		}
@@ -83,5 +77,4 @@ public class CookieInterceptor extends HandlerInterceptorAdapter {
 			throws Exception {
 		RetwisSecurity.setName(null);
 	}
-
 }

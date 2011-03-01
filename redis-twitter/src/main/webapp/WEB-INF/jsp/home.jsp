@@ -1,18 +1,15 @@
 <%@ include file="/WEB-INF/jsp/includes.jsp" %>
 <%@ include file="/WEB-INF/jsp/header.jsp" %>
 
+<h2><c:if test="${loggedUser eq name}"><fmt:message key="welcome"/> </c:if>${name}</h2>
 
-<%@page import="org.springframework.data.redis.samples.retwis.web.TimeUtils"%>
-
-<h2><fmt:message key="profile"/></h2>
-
-<h1>Welcome ${name}</h1>
-
+<c:choose>
+  <c:when test="${loggedUser eq name}">
 <form:form commandName="post" method="post" action="!${name}">
   <table>
     <tr>
       <th>
-        <i>${name}</i>, what's on your mind?<br/>
+        <i>${name}</i>, what's on your mind? (Why not say hi to <a href="!costinl">@costinl</a> ?)<br/>
         <br/>
         <form:textarea path="content" rows="3" columns="70"></form:textarea><br />
       </th>
@@ -24,18 +21,25 @@
     </tr>
   </table>
 </form:form>
-
 Home
-<div id="posts">
-   <c:forEach var="p" items="${posts}">
-   <div class="post">
-      ${p.content}
-      <c:set var="post_time" scope="page" value="${p.time}"/>
-      
-      <div class="date">
-      	<%= TimeUtils.inWords(Long.valueOf((String)pageContext.getAttribute("post_time"))) %>
-      </div>
-   </div>
-   </c:forEach>
-</div>
+ </c:when>
+<c:otherwise>
+	<div class="box">
+	   <c:choose>
+	     <c:when test="${follows}"><a href="!${name}/stopfollowing">Stop following</a></c:when>
+	     <c:otherwise><a href="!${name}/follow">Follow</a></c:otherwise>
+	   </c:choose>
+	   <br/><a href="!${name}/mentions"><fmt:message key="Mentions"/></a>
+	</div>
+	<div class="box">
+	  <c:if test="${!empty also_followed}">
+	  	Also followed by: <c:forEach var="f" items="also_follwed"><a href="!/${f}">${f}</a> </c:forEach>
+	  </c:if>
+	</div>
+</c:otherwise>
+</c:choose>
+<%@ include file="/WEB-INF/jsp/posts.jsp" %>
+
+<%@ include file="/WEB-INF/jsp/network.jsp" %>
+
 <%@ include file="/WEB-INF/jsp/footer.jsp" %>
