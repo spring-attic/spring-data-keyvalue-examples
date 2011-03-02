@@ -15,66 +15,67 @@
  */
 package org.springframework.data.redis.samples.retwis.web;
 
+
 /**
  * Utility converting the date (stored as long) into human-friendly message.
  * 
  * @author Costin Leau
  */
-public class TimeUtils {
+public class WebUtils {
 
-	public static String inWords(long time){
+	public static String timeInWords(long time) {
 		long elapsed = System.currentTimeMillis() - time;
-		
+
 		// seconds
 		elapsed /= 1000;
 
-		if (elapsed <10){
+		if (elapsed < 10) {
 			return "just now";
 		}
-		if (elapsed <60){
+		if (elapsed < 60) {
 			return "less than a minute ago";
 		}
-		
+
 		// minutes
 		elapsed /= 60;
 
-		if (elapsed <2){
-			return "a minute ago";	
+		if (elapsed < 2) {
+			return "a minute ago";
 		}
-		
-		if (elapsed <45){
-			return elapsed+" minutes ago";
+
+		if (elapsed < 45) {
+			return elapsed + " minutes ago";
 		}
-		
-		if (elapsed <90){
+
+		if (elapsed < 90) {
 			return "about an hour ago";
 		}
-		
-		if (elapsed <1440){
-			return elapsed/60 + " hours ago";
+
+		if (elapsed < 1440) {
+			return elapsed / 60 + " hours ago";
 		}
-		
-		if (elapsed < 2880){
+
+		if (elapsed < 2880) {
 			return "about a day ago";
 		}
-      
-		if (elapsed < 43200){
-		      return (elapsed / 1440) + " days ago";			
+
+		if (elapsed < 43200) {
+			return (elapsed / 1440) + " days ago";
 		}
-		
-		if (elapsed < 86400){
-			return "about a month ago";	
+
+		if (elapsed < 86400) {
+			return "about a month ago";
 		}
-		
-		if (elapsed < 525600){
-			return (elapsed / 43200) + " months ago";			
+
+		if (elapsed < 525600) {
+			return (elapsed / 43200) + " months ago";
 		}
-		
-		if (elapsed < 1051199)
-		{
+
+		if (elapsed < 1051199) {
 			return "about a year ago";
 		}
-		
+
 		return "over " + (elapsed / 525600) + " years ago";
 	}
+
 }

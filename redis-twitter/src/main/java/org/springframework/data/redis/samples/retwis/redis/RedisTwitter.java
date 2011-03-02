@@ -51,6 +51,9 @@ import org.springframework.util.StringUtils;
 @Named
 public class RedisTwitter {
 
+	private static final Pattern MENTION_REGEX = Pattern.compile("@[\\w]+");
+
+
 	private final StringRedisTemplate template;
 	private final ValueOperations<String, String> valueOps;
 	// post id generator
@@ -62,8 +65,6 @@ public class RedisTwitter {
 	private RedisList<String> users;
 	// time-line
 	private final RedisList<String> timeline;
-
-	private final Pattern MENTION_REGEX = Pattern.compile("@[\\w]+");
 
 	@Inject
 	public RedisTwitter(StringRedisTemplate template) {
@@ -103,7 +104,7 @@ public class RedisTwitter {
 
 	public List<Post> getPosts(String uid, Range range) {
 		List<String> pids = new DefaultRedisList<String>("posts:" + uid, template).range(range.being, range.end);
-		return convertPidsToPosts(pids);
+		return escape(convertPidsToPosts(pids));
 	}
 
 	private Post findPost(String pid) {
@@ -163,17 +164,6 @@ public class RedisTwitter {
 				mentions(uid).addFirst(pid);
 			}
 		}
-	}
-
-	private Collection<String> findMentions(String content) {
-		Matcher regexMatcher = MENTION_REGEX.matcher(content);
-		List<String> mentions = new ArrayList<String>(4);
-
-		while (regexMatcher.find()) {
-			mentions.add(regexMatcher.group().substring(1));
-		}
-
-		return mentions;
 	}
 
 	public String findUid(String name) {
@@ -291,5 +281,40 @@ public class RedisTwitter {
 		}
 
 		return posts;
+	}
+
+	private List<Post> escape(List<Post> posts) {
+		for (Post post : posts) {
+			String content = post.getContent();
+			Matcher regexMatcher = MENTION_REGEX.matcher(content);
+			boolean replace = false;
+
+			while (regexMatcher.find()) {
+				replace = true;
+				String match = regexMatcher.group();
+				int start = regexMatcher.start();
+				int stop = regexMatcher.end();
+
+
+				content = content.substring(0, start) + "<a href=\"!" + match.substring(1) + "\">" + match + "</a>"
+						+ content.substring(stop);
+			}
+			if (replace) {
+				post.setContent(content);
+			}
+		}
+		return posts;
+	}
+
+
+	public static Collection<String> findMentions(String content) {
+		Matcher regexMatcher = MENTION_REGEX.matcher(content);
+		List<String> mentions = new ArrayList<String>(4);
+
+		while (regexMatcher.find()) {
+			mentions.add(regexMatcher.group().substring(1));
+		}
+
+		return mentions;
 	}
 }

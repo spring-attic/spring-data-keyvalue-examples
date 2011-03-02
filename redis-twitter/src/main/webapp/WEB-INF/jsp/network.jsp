@@ -1,5 +1,3 @@
-<%@page import="org.springframework.data.redis.samples.retwis.web.TimeUtils"%>
-
 <div class="network" id="rightcol">
   <c:if test="${!empty in_common}">
   	 <div class="common">

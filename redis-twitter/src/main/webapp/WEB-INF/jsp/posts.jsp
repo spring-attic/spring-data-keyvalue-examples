@@ -1,4 +1,4 @@
-<%@page import="org.springframework.data.redis.samples.retwis.web.TimeUtils"%>
+<%@page import="org.springframework.data.redis.samples.retwis.web.WebUtils"%>
 
 <div id="posts">
    <c:choose>
@@ -9,10 +9,11 @@
 		   <c:forEach var="p" items="${posts}">
 		   <div class="post">
 		      <a href="!${p.name}"><b>${p.name}</b></a> ${p.content}
-		      <c:set var="post_time" scope="page" value="${p.time}"/>
+		      <c:set var="post_time" value="${p.time}"/>
+		      
 		      <div class="date">
 		        <!-- link to post -->
-		      	<a href="!${p.name}/status/${p.pid}"><%= TimeUtils.inWords(Long.valueOf((String)pageContext.getAttribute("post_time"))) %></a>
+		      	<a href="!${p.name}/status/${p.pid}"><%= WebUtils.timeInWords(Long.valueOf((String)pageContext.getAttribute("post_time"))) %></a>
 			    <!-- reply connection -->
 			    <c:if test="${!empty p.replyPid}">
 			       <a href="!${p.replyName}}/status/${p.replyPid}">in reply to ${p.replyName}</a>
