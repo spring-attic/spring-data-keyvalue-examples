@@ -30,9 +30,9 @@ public class NoSuchUserException extends RuntimeException {
 	}
 
 	/**
-	 * Returns the username.
+	 * Returns the name.
 	 *
-	 * @return Returns the username
+	 * @return Returns the name
 	 */
 	public String getUsername() {
 		return username;

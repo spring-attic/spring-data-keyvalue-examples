@@ -18,9 +18,12 @@ package org.springframework.data.redis.samples.retwis.redis;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -33,9 +36,11 @@ import org.springframework.data.keyvalue.redis.support.collections.DefaultRedisL
 import org.springframework.data.keyvalue.redis.support.collections.DefaultRedisMap;
 import org.springframework.data.keyvalue.redis.support.collections.DefaultRedisSet;
 import org.springframework.data.keyvalue.redis.support.collections.RedisList;
+import org.springframework.data.keyvalue.redis.support.collections.RedisSet;
 import org.springframework.data.redis.samples.Post;
 import org.springframework.data.redis.samples.retwis.PostIdGenerator;
 import org.springframework.data.redis.samples.retwis.Range;
+import org.springframework.data.redis.samples.retwis.RetwisSecurity;
 import org.springframework.util.StringUtils;
 
 /**
@@ -57,6 +62,8 @@ public class RedisTwitter {
 	private RedisList<String> users;
 	// time-line
 	private final RedisList<String> timeline;
+
+	private final Pattern MENTION_REGEX = Pattern.compile("@[\\w]+");
 
 	@Inject
 	public RedisTwitter(StringRedisTemplate template) {
@@ -85,34 +92,21 @@ public class RedisTwitter {
 		userOps.put("name", name);
 		userOps.put("pass", password);
 
-		// link username -> uid
+		// link name -> uid
 		valueOps.set("user:" + name + ":uid", uid);
 
-		// track username
+		// track name
 		users.add(name);
 
 		return addAuth(name);
 	}
 
-	public List<Post> getPosts(String username, Range range) {
-		String uid = findUid(username);
-		List<String> pids = new DefaultRedisList<String>("posts:" + uid, template).range(range.start, range.end);
-		return loadPosts(pids);
+	public List<Post> getPosts(String uid, Range range) {
+		List<String> pids = new DefaultRedisList<String>("posts:" + uid, template).range(range.being, range.end);
+		return convertPidsToPosts(pids);
 	}
 
-	private List<Post> loadPosts(Collection<String> pids) {
-		List<Post> posts = new ArrayList<Post>(pids.size());
-
-		//FIXME: add basic mapping mechanism
-		//FIXME: optimize this N+1
-		for (String pid : pids) {
-			posts.add(loadPost(pid));
-		}
-
-		return posts;
-	}
-
-	private Post loadPost(String pid) {
+	private Post findPost(String pid) {
 		Post post = new Post().fromMap(new DefaultRedisMap<String, String>("pid:" + pid, template));
 		post.setName(findName(post.getUid()));
 		post.setReplyName(findName(post.getReplyUid()));
@@ -120,47 +114,71 @@ public class RedisTwitter {
 		return post;
 	}
 
-	public Set<String> getFollowers(String username) {
-		String uid = findUid(username);
-		return new DefaultRedisSet<String>("uid:" + uid + ":followers", template);
+	public Set<String> getFollowers(String uid) {
+		return covertUidToNames(followers(uid));
 	}
 
-	public Set<String> getFollowing(String username) {
-		String uid = findUid(username);
-		return new DefaultRedisSet<String>("uid:" + uid + ":following", template);
+	public Set<String> getFollowing(String uid) {
+		return covertUidToNames(following(uid));
 	}
 
-	public List<String> getMentions(String username, Range range) {
-		String uid = findUid(username);
-		return new DefaultRedisList<String>("uid:" + uid + ":mentions", template).range(range.start, range.end);
+	public List<Post> getMentions(String uid, Range range) {
+		return convertPidsToPosts(mentions(uid).range(range.being, range.end));
 	}
 
 	public Collection<Post> timeline(Range range) {
-		Collection<String> pids = timeline.range(range.start, range.end);
-		return loadPosts(pids);
+		Collection<String> pids = timeline.range(range.being, range.end);
+		return convertPidsToPosts(pids);
 	}
 
 	public Collection<String> newUsers(Range range) {
-		return users.range(range.start, range.end);
+		return users.range(range.being, range.end);
 	}
 
-
 	public void post(String username, Post post) {
+
 		String uid = findUid(username);
 		post.setUid(uid);
+
 		String pid = postIdGenerator.generate();
+		post.setPid(pid);
+
 		// add post
 		new DefaultRedisMap<String, Object>("pid:" + pid, template).putAll(post.asMap());
 
 		// add links
 		new DefaultRedisList<String>("posts:" + uid, template).addFirst(pid);
 		timeline.addFirst(pid);
+
+		handleMentions(post);
 	}
 
-	private String findUid(String name) {
+	private void handleMentions(Post post) {
+		// find mentions
+		String pid = post.getPid();
+		Collection<String> mentions = findMentions(post.getContent());
+		for (String mention : mentions) {
+			String uid = findUid(mention);
+			if (uid != null) {
+				mentions(uid).addFirst(pid);
+			}
+		}
+	}
+
+	private Collection<String> findMentions(String content) {
+		Matcher regexMatcher = MENTION_REGEX.matcher(content);
+		List<String> mentions = new ArrayList<String>(4);
+
+		while (regexMatcher.find()) {
+			mentions.add(regexMatcher.group().substring(1));
+		}
+
+		return mentions;
+	}
+
+	public String findUid(String name) {
 		return valueOps.get("user:" + name + ":uid");
 	}
-
 
 	public boolean isUserValid(String name) {
 		return template.hasKey("user:" + name + ":uid");
@@ -187,14 +205,13 @@ public class RedisTwitter {
 		return false;
 	}
 
-
-	public String getUserNameForAuth(String value) {
+	public String findNameForAuth(String value) {
 		String uid = valueOps.get("auth:" + value);
 		return findName(uid);
 	}
 
 	/**
-	 * Adds auth key to Redis for the given username.
+	 * Adds auth key to Redis for the given name.
 	 * 
 	 * @param uid
 	 * @return
@@ -211,9 +228,68 @@ public class RedisTwitter {
 	public void deleteAuth(String user) {
 		String uid = findUid(user);
 
-		String authKey = "uid:"+uid+":auth";
+		String authKey = "uid:" + uid + ":auth";
 		String auth = valueOps.get(authKey);
-		
+
 		template.delete(Arrays.asList(authKey, "auth:" + auth));
+	}
+
+	public boolean isFollowing(String uid, String targetUid) {
+		return following(uid).contains(targetUid);
+	}
+
+	public void follow(String targetUser) {
+		String targetUid = findUid(targetUser);
+
+		following(RetwisSecurity.getUid()).add(targetUid);
+		followers(targetUid).add(RetwisSecurity.getUid());
+	}
+
+	public void stopFollowing(String targetUser) {
+		String targetUid = findUid(targetUser);
+
+		following(RetwisSecurity.getUid()).remove(targetUid);
+		followers(targetUid).remove(RetwisSecurity.getUid());
+	}
+
+	public Set<String> alsoFollowed(String uid, String targetUid) {
+		return covertUidToNames(following(uid).intersect(followers(targetUid)));
+	}
+
+	public Set<String> commonFollowers(String uid, String targetUid) {
+		return covertUidToNames(following(uid).intersect(following(targetUid)));
+	}
+
+	private RedisSet<String> following(String uid) {
+		return new DefaultRedisSet<String>("uid:" + uid + ":following", template);
+	}
+
+	private RedisSet<String> followers(String uid) {
+		return new DefaultRedisSet<String>("uid:" + uid + ":followers", template);
+	}
+
+	private RedisList<String> mentions(String uid) {
+		return new DefaultRedisList<String>("uid:" + uid + ":mentions", template);
+	}
+
+	private Set<String> covertUidToNames(Set<String> uids) {
+		Set<String> set = new LinkedHashSet<String>(uids.size());
+
+		for (String uid : uids) {
+			set.add(findName(uid));
+		}
+		return set;
+	}
+
+	private List<Post> convertPidsToPosts(Collection<String> pids) {
+		List<Post> posts = new ArrayList<Post>(pids.size());
+
+		//FIXME: add basic mapping mechanism
+		//FIXME: optimize this N+1
+		for (String pid : pids) {
+			posts.add(findPost(pid));
+		}
+
+		return posts;
 	}
 }

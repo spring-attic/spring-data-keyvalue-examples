@@ -24,18 +24,7 @@
 Home
  </c:when>
 <c:otherwise>
-	<div class="box">
-	   <c:choose>
-	     <c:when test="${follows}"><a href="!${name}/stopfollowing">Stop following</a></c:when>
-	     <c:otherwise><a href="!${name}/follow">Follow</a></c:otherwise>
-	   </c:choose>
-	   <br/><a href="!${name}/mentions"><fmt:message key="Mentions"/></a>
-	</div>
-	<div class="box">
-	  <c:if test="${!empty also_followed}">
-	  	Also followed by: <c:forEach var="f" items="also_follwed"><a href="!/${f}">${f}</a> </c:forEach>
-	  </c:if>
-	</div>
+<%@ include file="/WEB-INF/jsp/userFollow.jsp" %>
 </c:otherwise>
 </c:choose>
 <%@ include file="/WEB-INF/jsp/posts.jsp" %>

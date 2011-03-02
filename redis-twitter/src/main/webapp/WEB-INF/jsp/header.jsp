@@ -19,11 +19,11 @@
     	pageContext.setAttribute("loggedUser", RetwisSecurity.getName(), PageContext.PAGE_SCOPE); 
     %>
     <c:if test="${loggedIn}">
+    	<a href="<c:url value="/!${loggedUser}"/>">home</a> |
+    	<a href="<c:url value="/!${loggedUser}/mentions"/>">@${loggedUser}</a> |
+    	<a href="<c:url value="/timeline"/>">timeline</a> |  
+    	<a href="<c:url value="logout"/>">logout</a>
 	    <br /><br />
-	    <a href="!${loggedUser}">home</a> |
-        <a href="!${loggedUser}/mentions">@${loggedUser}</a> | 
-        <a href="timeline">timeline</a> | 
-        <a href="logout">logout</a>
     </c:if>
   </div>
   <hr />

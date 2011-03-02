@@ -25,14 +25,28 @@ import org.springframework.util.StringUtils;
  */
 public abstract class RetwisSecurity {
 
-	private static final ThreadLocal<String> user = new NamedThreadLocal<String>("Retwis-id");
-
-	public static String getName() {
-		return user.get();
+	private static class UserInfo {
+		String name;
+		String uid;
 	}
 
-	public static void setName(String name) {
-		user.set(name);
+	private static final ThreadLocal<UserInfo> user = new NamedThreadLocal<UserInfo>("Retwis-id");
+
+	public static String getName() {
+		UserInfo userInfo = user.get();
+		return (userInfo != null ? userInfo.name : null);
+	}
+
+	public static String getUid() {
+		UserInfo userInfo = user.get();
+		return (userInfo != null ? userInfo.uid : null);
+	}
+
+	public static void setUser(String name, String uid) {
+		UserInfo userInfo = new UserInfo();
+		userInfo.name = name;
+		userInfo.uid = uid;
+		user.set(userInfo);
 	}
 
 	public static boolean isSignedIn() {
@@ -40,6 +54,6 @@ public abstract class RetwisSecurity {
 	}
 
 	public static void clean() {
-		setName(null);
+		user.set(null);
 	}
 }

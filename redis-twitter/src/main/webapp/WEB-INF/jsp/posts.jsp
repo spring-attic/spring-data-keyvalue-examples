@@ -8,7 +8,7 @@
 	   <c:otherwise>
 		   <c:forEach var="p" items="${posts}">
 		   <div class="post">
-		      <b>${p.name}</b> ${p.content}
+		      <a href="!${p.name}"><b>${p.name}</b></a> ${p.content}
 		      <c:set var="post_time" scope="page" value="${p.time}"/>
 		      <div class="date">
 		        <!-- link to post -->

@@ -22,14 +22,14 @@ package org.springframework.data.redis.samples.retwis;
  */
 public class Range {
 
-	public int start = 0;
+	public int being = 0;
 	public int end = 9;
 
 	public Range() {
 	};
 
-	public Range(int start, int end) {
-		this.start = start;
+	public Range(int begin, int end) {
+		this.being = begin;
 		this.end = end;
 	}
 }

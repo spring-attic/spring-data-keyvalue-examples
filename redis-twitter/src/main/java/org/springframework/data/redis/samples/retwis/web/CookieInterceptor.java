@@ -57,8 +57,11 @@ public class CookieInterceptor extends HandlerInterceptorAdapter {
 			if (!ObjectUtils.isEmpty(cookies)) {
 				for (Cookie cookie : cookies) {
 					if (RETWIS_COOKIE.equals(cookie.getName())) {
-						if (twitter.isAuthValid(cookie.getValue())) {
-							RetwisSecurity.setName(twitter.getUserNameForAuth(cookie.getValue()));
+						String auth = cookie.getValue();
+						if (twitter.isAuthValid(auth)) {
+							String name = twitter.findNameForAuth(auth);
+							String uid = twitter.findUid(name);
+							RetwisSecurity.setUser(name, uid);
 							return true;
 						}
 					}
@@ -75,6 +78,6 @@ public class CookieInterceptor extends HandlerInterceptorAdapter {
 	@Override
 	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
 			throws Exception {
-		RetwisSecurity.setName(null);
+		RetwisSecurity.clean();
 	}
 }

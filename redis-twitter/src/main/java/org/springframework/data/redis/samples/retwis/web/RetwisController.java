@@ -81,7 +81,7 @@ public class RetwisController {
 	}
 
 	private void addAuthCookie(String auth, String name, HttpServletResponse response) {
-		RetwisSecurity.setName(name);
+		RetwisSecurity.setUser(name, twitter.findUid(name));
 
 		Cookie cookie = new Cookie(CookieInterceptor.RETWIS_COOKIE, auth);
 		cookie.setComment("Retwis-J demo");
@@ -90,31 +90,56 @@ public class RetwisController {
 		response.addCookie(cookie);
 	}
 
-	@RequestMapping(value = "/!{username}", method = RequestMethod.GET)
-	public ModelAndView posts(@PathVariable String username) {
-		checkUser(username);
+	@RequestMapping(value = "/!{name}", method = RequestMethod.GET)
+	public ModelAndView posts(@PathVariable String name) {
+		checkUser(name);
 
+		String targetUid = twitter.findUid(name);
 		ModelAndView mav = new ModelAndView("home");
 		mav.addObject("post", new Post());
-		mav.addObject("name", username);
-		mav.addObject("posts", twitter.getPosts(username, new Range()));
+		mav.addObject("name", name);
+		mav.addObject("posts", twitter.getPosts(targetUid, new Range()));
+		mav.addObject("followers", twitter.getFollowers(targetUid));
+		mav.addObject("following", twitter.getFollowing(targetUid));
+		if (RetwisSecurity.isSignedIn()) {
+			mav.addObject("also_followed", twitter.alsoFollowed(RetwisSecurity.getUid(), targetUid));
+			mav.addObject("common_followers", twitter.commonFollowers(RetwisSecurity.getUid(), targetUid));
+			mav.addObject("follows", twitter.isFollowing(RetwisSecurity.getUid(), targetUid));
+		}
 		return mav;
 	}
 
-	@RequestMapping(value = "/!{username}", method = RequestMethod.POST)
-	public ModelAndView posts(@PathVariable String username, @ModelAttribute Post post) {
-		checkUser(username);
+	@RequestMapping(value = "/!{name}", method = RequestMethod.POST)
+	public ModelAndView posts(@PathVariable String name, @ModelAttribute Post post) {
+		checkUser(name);
 
-		twitter.post(username, post);
-		return posts(username);
+		twitter.post(name, post);
+		return posts(name);
 	}
 
-	@RequestMapping("/!{username}/mentions")
-	public ModelAndView mentions(@PathVariable String username) {
-		checkUser(username);
+	@RequestMapping("/!{name}/follow")
+	public String follow(@PathVariable String name) {
+		checkUser(name);
+
+		twitter.follow(name);
+		return "redirect:/!" + name;
+	}
+
+	@RequestMapping("/!{name}/stopfollowing")
+	public String stopFollowing(@PathVariable String name) {
+		checkUser(name);
+
+		twitter.stopFollowing(name);
+		return "redirect:/!" + name;
+	}
+
+	@RequestMapping("/!{name}/mentions")
+	public ModelAndView mentions(@PathVariable String name) {
+		checkUser(name);
 
 		ModelAndView mav = new ModelAndView("mentions");
-		mav.addObject("mentions", twitter.getMentions(username, new Range()));
+		mav.addObject("name", name);
+		mav.addObject("posts", twitter.getMentions(twitter.findUid(name), new Range()));
 		return mav;
 	}
 
