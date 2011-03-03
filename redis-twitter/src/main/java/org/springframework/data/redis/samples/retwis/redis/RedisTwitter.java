@@ -104,7 +104,7 @@ public class RedisTwitter {
 
 	public List<Post> getPosts(String uid, Range range) {
 		List<String> pids = new DefaultRedisList<String>("posts:" + uid, template).range(range.being, range.end);
-		return escape(convertPidsToPosts(pids));
+		return addReplyLinks(convertPidsToPosts(pids));
 	}
 
 	private Post findPost(String pid) {
@@ -128,8 +128,7 @@ public class RedisTwitter {
 	}
 
 	public Collection<Post> timeline(Range range) {
-		Collection<String> pids = timeline.range(range.being, range.end);
-		return convertPidsToPosts(pids);
+		return addReplyLinks(convertPidsToPosts(timeline.range(range.being, range.end)));
 	}
 
 	public Collection<String> newUsers(Range range) {
@@ -283,7 +282,7 @@ public class RedisTwitter {
 		return posts;
 	}
 
-	private List<Post> escape(List<Post> posts) {
+	private List<Post> addReplyLinks(List<Post> posts) {
 		for (Post post : posts) {
 			String content = post.getContent();
 			Matcher regexMatcher = MENTION_REGEX.matcher(content);
