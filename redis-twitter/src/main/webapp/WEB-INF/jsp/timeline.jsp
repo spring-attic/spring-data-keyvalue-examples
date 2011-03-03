@@ -1,12 +1,8 @@
-<%@ include file="/WEB-INF/jsp/includes.jsp" %>
-<%@ include file="/WEB-INF/jsp/header.jsp" %>
-
-
 <h2><fmt:message key="timeline"/></h2>
 Posts from all users.
 <br/>
 
-<%@ include file="/WEB-INF/jsp/posts.jsp" %>
+<%@ include file="/WEB-INF/templates/posts.jspf" %>
 
 <div class="span-7 last" id="rightcol">
   <div class="span-7 box">
@@ -17,5 +13,3 @@ Posts from all users.
     </c:forEach>
   </div>
 </div>
-
-<%@ include file="/WEB-INF/jsp/footer.jsp" %>

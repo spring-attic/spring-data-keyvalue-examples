@@ -15,9 +15,6 @@
  */
 package org.springframework.data.redis.samples.retwis.web;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,12 +25,12 @@ import org.springframework.data.redis.samples.retwis.Range;
 import org.springframework.data.redis.samples.retwis.RetwisSecurity;
 import org.springframework.data.redis.samples.retwis.redis.RedisTwitter;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -61,7 +58,7 @@ public class RetwisController {
 	}
 
 	@RequestMapping("/signUp")
-	public String signUp(@RequestParam String name, @RequestParam String pass, @RequestParam String pass2, HttpServletResponse response) {
+	public String signUp(String name, String pass, String pass2, HttpServletResponse response) {
 		// FIXME: add pass check
 		String auth = twitter.addUser(name, pass);
 		addAuthCookie(auth, name, response);
@@ -70,7 +67,7 @@ public class RetwisController {
 	}
 
 	@RequestMapping("/signIn")
-	public String signIn(@RequestParam String name, @RequestParam String pass, HttpServletResponse response) {
+	public String signIn(String name, String pass, HttpServletResponse response) {
 		// add tracing cookie
 		if (twitter.auth(name, pass)) {
 			addAuthCookie(twitter.addAuth(name), name, response);
@@ -91,36 +88,34 @@ public class RetwisController {
 	}
 
 	@RequestMapping(value = "/!{name}", method = RequestMethod.GET)
-	public ModelAndView posts(@PathVariable String name) {
+	public String posts(@PathVariable String name, Model model) {
 		checkUser(name);
 
 		String targetUid = twitter.findUid(name);
-		ModelAndView mav = new ModelAndView("home");
-		mav.addObject("post", new Post());
-		mav.addObject("name", name);
-		mav.addObject("posts", twitter.getPosts(targetUid, new Range()));
-		mav.addObject("followers", twitter.getFollowers(targetUid));
-		mav.addObject("following", twitter.getFollowing(targetUid));
+		model.addAttribute("post", new Post());
+		model.addAttribute("name", name);
+		model.addAttribute("posts", twitter.getPosts(targetUid, new Range()));
+		model.addAttribute("followers", twitter.getFollowers(targetUid));
+		model.addAttribute("following", twitter.getFollowing(targetUid));
 		if (RetwisSecurity.isSignedIn()) {
-			mav.addObject("also_followed", twitter.alsoFollowed(RetwisSecurity.getUid(), targetUid));
-			mav.addObject("common_followers", twitter.commonFollowers(RetwisSecurity.getUid(), targetUid));
-			mav.addObject("follows", twitter.isFollowing(RetwisSecurity.getUid(), targetUid));
+			model.addAttribute("also_followed", twitter.alsoFollowed(RetwisSecurity.getUid(), targetUid));
+			model.addAttribute("common_followers", twitter.commonFollowers(RetwisSecurity.getUid(), targetUid));
+			model.addAttribute("follows", twitter.isFollowing(RetwisSecurity.getUid(), targetUid));
 		}
-		return mav;
+
+		return "home";
 	}
 
 	@RequestMapping(value = "/!{name}", method = RequestMethod.POST)
-	public ModelAndView posts(@PathVariable String name, @ModelAttribute Post post) {
+	public String posts(@PathVariable String name, @ModelAttribute Post post, Model model) {
 		checkUser(name);
-
 		twitter.post(name, post);
-		return posts(name);
+		return "redirect:/!" + name;
 	}
 
 	@RequestMapping("/!{name}/follow")
 	public String follow(@PathVariable String name) {
 		checkUser(name);
-
 		twitter.follow(name);
 		return "redirect:/!" + name;
 	}
@@ -128,27 +123,22 @@ public class RetwisController {
 	@RequestMapping("/!{name}/stopfollowing")
 	public String stopFollowing(@PathVariable String name) {
 		checkUser(name);
-
 		twitter.stopFollowing(name);
 		return "redirect:/!" + name;
 	}
 
 	@RequestMapping("/!{name}/mentions")
-	public ModelAndView mentions(@PathVariable String name) {
+	public String mentions(@PathVariable String name, Model model) {
 		checkUser(name);
-
-		ModelAndView mav = new ModelAndView("mentions");
-		mav.addObject("name", name);
-		mav.addObject("posts", twitter.getMentions(twitter.findUid(name), new Range()));
-		return mav;
+		model.addAttribute("name", name);
+		model.addAttribute("posts", twitter.getMentions(twitter.findUid(name), new Range()));
+		return "mentions";
 	}
 
 	@RequestMapping("/timeline")
-	public Map timeline() {
-		Map map = new HashMap();
-		map.put("posts", twitter.timeline(new Range()));
-		map.put("users", twitter.newUsers(new Range()));
-		return map;
+	public void timeline(Model model) {
+		model.addAttribute("posts", twitter.timeline(new Range()));
+		model.addAttribute("users", twitter.newUsers(new Range()));
 	}
 
 	@RequestMapping("/logout")

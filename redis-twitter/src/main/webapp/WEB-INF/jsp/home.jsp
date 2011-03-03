@@ -1,6 +1,3 @@
-<%@ include file="/WEB-INF/jsp/includes.jsp" %>
-<%@ include file="/WEB-INF/jsp/header.jsp" %>
-
 <h2><c:if test="${loggedUser eq name}"><fmt:message key="welcome"/> </c:if>${name}</h2>
 
 <c:choose>
@@ -24,11 +21,8 @@
 Home
  </c:when>
 <c:otherwise>
-<%@ include file="/WEB-INF/jsp/userFollow.jsp" %>
+<%@ include file="/WEB-INF/templates/userFollow.jspf" %>
 </c:otherwise>
 </c:choose>
-<%@ include file="/WEB-INF/jsp/posts.jsp" %>
-
-<%@ include file="/WEB-INF/jsp/network.jsp" %>
-
-<%@ include file="/WEB-INF/jsp/footer.jsp" %>
+<%@ include file="/WEB-INF/templates/posts.jspf" %>
+<%@ include file="/WEB-INF/templates/network.jspf" %>

@@ -15,30 +15,13 @@
 	<!--
 		- The controllers are autodetected POJOs labeled with the @Controller annotation.
 	-->
-	<context:component-scan base-package="org.springframework.data.redis.samples.retwis.web"/>
+	<context:component-scan base-package="org.springframework.data.redis.samples.retwis"/>
 
-	<!-- add cookie interceptor -->
+	<mvc:annotation-driven/>
+
 	<mvc:interceptors>
         <bean class="org.springframework.data.redis.samples.retwis.web.CookieInterceptor" />
 	</mvc:interceptors>
-
-	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerExceptionResolver"/>
-
-	<!--
-		- This bean resolves specific types of exceptions to corresponding logical 
-		- view names for error views. The default behaviour of DispatcherServlet 
-		- is to propagate all exceptions to the servlet container: this will happen 
-		- here with all other types of exceptions.
-	-->
-	<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
-		<property name="exceptionMappings">
-			<props>
-				<prop key="org.springframework.web.servlet.PageNotFound">uncaughtException</prop>
-				<prop key="org.springframework.dao.DataAccessException">dataAccessFailure</prop>
-			</props>
-		</property>
-	</bean>
-	
 
 	<!--
 		- This view resolver delegates to the InternalResourceViewResolver and BeanNameViewResolver,
@@ -58,13 +41,6 @@
 	-->
 	
 	<!--
-		- The BeanNameViewResolver is used to pick up the visits view name (below).
-		- It has the order property set to 2, which means that this will
-		- be the first view resolver to be used after the delegating content
-		- negotiating view resolver.
-	 -->
-	<bean class="org.springframework.web.servlet.view.BeanNameViewResolver" p:order="1"/>
-	<!--
 
 		- This bean configures the 'prefix' and 'suffix' properties of
 		- InternalResourceViewResolver, which resolves logical view names
@@ -72,7 +48,7 @@
 		- will be mapped to "/WEB-INF/jsp/vets.jsp".
 	-->
 	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" p:prefix="/WEB-INF/jsp/"
-			p:suffix=".jsp" p:order="2"/>
+			p:suffix=".jsp"/>
 
 	<!-- 
 		- The AtomView rendering a Atom feed of the visits
@@ -95,5 +71,4 @@
 	-->
 	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource"
 			p:basename="messages"/>
-
 </beans>

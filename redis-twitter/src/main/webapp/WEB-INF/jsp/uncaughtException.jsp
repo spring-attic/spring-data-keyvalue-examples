@@ -1,6 +1,3 @@
-<%@ include file="/WEB-INF/jsp/includes.jsp" %>
-<%@ include file="/WEB-INF/jsp/header.jsp" %>
-
 <h2/>Internal error</h2>
 <p/>
 
@@ -44,5 +41,3 @@ try {
 
 <p/>
 <br/>
-
-<%@ include file="/WEB-INF/jsp/footer.jsp" %>

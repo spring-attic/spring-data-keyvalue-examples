@@ -36,6 +36,7 @@ import org.springframework.data.keyvalue.redis.support.collections.DefaultRedisL
 import org.springframework.data.keyvalue.redis.support.collections.DefaultRedisMap;
 import org.springframework.data.keyvalue.redis.support.collections.DefaultRedisSet;
 import org.springframework.data.keyvalue.redis.support.collections.RedisList;
+import org.springframework.data.keyvalue.redis.support.collections.RedisMap;
 import org.springframework.data.keyvalue.redis.support.collections.RedisSet;
 import org.springframework.data.redis.samples.Post;
 import org.springframework.data.redis.samples.retwis.PostIdGenerator;
@@ -108,7 +109,7 @@ public class RedisTwitter {
 	}
 
 	private Post findPost(String pid) {
-		Post post = new Post().fromMap(new DefaultRedisMap<String, String>("pid:" + pid, template));
+		Post post = new Post().fromMap(post(pid));
 		post.setName(findName(post.getUid()));
 		post.setReplyName(findName(post.getReplyUid()));
 		post.setPid(pid);
@@ -144,7 +145,7 @@ public class RedisTwitter {
 		post.setPid(pid);
 
 		// add post
-		new DefaultRedisMap<String, Object>("pid:" + pid, template).putAll(post.asMap());
+		post(pid).putAll(post.asMap());
 
 		// add links
 		new DefaultRedisList<String>("posts:" + uid, template).addFirst(pid);
@@ -259,6 +260,10 @@ public class RedisTwitter {
 
 	private RedisList<String> mentions(String uid) {
 		return new DefaultRedisList<String>("uid:" + uid + ":mentions", template);
+	}
+
+	private RedisMap<String, String> post(String pid) {
+		return new DefaultRedisMap<String, String>("pid:" + pid, template);
 	}
 
 	private Set<String> covertUidToNames(Set<String> uids) {

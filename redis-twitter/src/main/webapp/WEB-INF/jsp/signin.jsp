@@ -1,6 +1,3 @@
-<%@ include file="/WEB-INF/jsp/includes.jsp" %>
-<%@ include file="/WEB-INF/jsp/header.jsp" %>
-
 <h2><fmt:message key="welcome"/></h2>
 
 <div class="span-11 box">
@@ -46,5 +43,3 @@
 
 <p>&nbsp;</p>
 <p>&nbsp;</p>
-
-<%@ include file="/WEB-INF/jsp/footer.jsp" %>
