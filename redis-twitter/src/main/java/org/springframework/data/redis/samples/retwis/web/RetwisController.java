@@ -110,7 +110,6 @@ public class RetwisController {
 	@RequestMapping(value = "/!{name}", method = RequestMethod.POST)
 	public String posts(@PathVariable String name, WebPost post, Model model, HttpServletRequest request) {
 		checkUser(name);
-		System.out.println("Received post" + post + "|" + request.getParameterMap());
 		twitter.post(name, post);
 		return "redirect:/!" + name;
 	}

@@ -117,7 +117,6 @@ public class RedisTwitter {
 
 	private WebPost convertPost(String pid) {
 		Post post = new Post().fromMap(post(pid));
-		System.out.println("Loaded post " + post);
 		WebPost wPost = new WebPost(post);
 		wPost.setPid(pid);
 		wPost.setName(findName(post.getUid()));
@@ -161,7 +160,6 @@ public class RedisTwitter {
 	}
 
 	public void post(String username, WebPost post) {
-		System.out.println("Received post " + post);
 		Post p = post.asPost();
 
 		String uid = findUid(username);
@@ -175,8 +173,6 @@ public class RedisTwitter {
 			mentions(mentionUid).addFirst(pid);
 			p.setReplyPid(post.getReplyPid());
 		}
-
-		System.out.println("About to save post " + p);
 		// add post
 		post(pid).putAll(p.asMap());
 
