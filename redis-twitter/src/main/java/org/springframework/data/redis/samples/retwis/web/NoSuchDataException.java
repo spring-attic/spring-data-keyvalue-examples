@@ -16,17 +16,17 @@
 package org.springframework.data.redis.samples.retwis.web;
 
 /**
- * Exception thrown when the controller is invoked with an invalid user.
+ * Exception thrown when the controller is invoked with invalid data.
  * 
  * @author Costin Leau
  */
-public class NoSuchUserException extends RuntimeException {
+public class NoSuchDataException extends RuntimeException {
 
-	private final String username;
+	private final String data;
 
-	public NoSuchUserException(String username) {
-		super("Invalid user " + username);
-		this.username = username;
+	public NoSuchDataException(String data) {
+		super("Invalid data " + data);
+		this.data = data;
 	}
 
 	/**
@@ -34,7 +34,7 @@ public class NoSuchUserException extends RuntimeException {
 	 *
 	 * @return Returns the name
 	 */
-	public String getUsername() {
-		return username;
+	public String getData() {
+		return data;
 	}
 }

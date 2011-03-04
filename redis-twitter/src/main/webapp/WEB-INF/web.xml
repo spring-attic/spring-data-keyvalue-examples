@@ -114,7 +114,7 @@
 	<error-page>
 		<exception-type>java.lang.Exception</exception-type>
 		<!-- Displays a stack trace -->
-		<location>/WEB-INF/jsp/uncaughtException.jsp</location>
+		<location>/WEB-INF/jsp/oops</location>
 	</error-page>
 
 	<!-- eliminate welcome files -->

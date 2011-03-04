@@ -1,0 +1,17 @@
+		   <c:forEach var="p" items="${posts}">
+		   <div class="post">
+		      <a href="!${p.name}"><b>${p.name}</b></a> ${p.content}
+		      <div class="date">
+		        <!-- link to post -->
+		      	<a href="<c:url value="/status?pid=${p.pid}"/>">${p.time}</a>
+			    <!-- reply connection -->
+			    <c:if test="${!empty p.replyPid}">
+			       <a href="<c:url value="/status?pid=${p.replyPid}"/>">in reply to ${p.replyTo}</a>
+			    </c:if>
+			    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			    <c:if test="${loggedIn}">
+			      <a href="<c:url value="/!${loggedUser}?replyto=${p.name}&replypid=${p.pid}"/>">Reply</a>
+			    </c:if>
+		      </div>
+		   </div>
+		   </c:forEach>

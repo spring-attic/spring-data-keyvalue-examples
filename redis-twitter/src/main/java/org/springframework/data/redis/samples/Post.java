@@ -31,59 +31,6 @@ public class Post {
 	private String replyPid;
 	private String replyUid;
 
-	// display properties
-	private String name;
-	private String replyName;
-	private String pid;
-
-	/**
-	 * Returns the pid.
-	 *
-	 * @return Returns the pid
-	 */
-	public String getPid() {
-		return pid;
-	}
-
-	/**
-	 * @param pid The pid to set.
-	 */
-	public void setPid(String pid) {
-		this.pid = pid;
-	}
-
-	/**
-	 * Returns the name.
-	 *
-	 * @return Returns the name
-	 */
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * @param name The name to set.
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	/**
-	 * Returns the replyName.
-	 *
-	 * @return Returns the replyName
-	 */
-	public String getReplyName() {
-		return replyName;
-	}
-
-	/**
-	 * @param replyName The replyName to set.
-	 */
-	public void setReplyName(String replyName) {
-		this.replyName = replyName;
-	}
-
 	/**
 	 * Returns the content.
 	 *
@@ -183,5 +130,11 @@ public class Post {
 		content = map.get("content");
 		time = map.get("time");
 		return this;
+	}
+
+	@Override
+	public String toString() {
+		return "Post [content=" + content + ", replyPid=" + replyPid + ", replyUid=" + replyUid
+				+ ", time=" + time + ", uid=" + uid + "]";
 	}
 }

@@ -18,10 +18,12 @@ package org.springframework.data.redis.samples.retwis.redis;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.BlockingDeque;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,6 +44,7 @@ import org.springframework.data.redis.samples.Post;
 import org.springframework.data.redis.samples.retwis.PostIdGenerator;
 import org.springframework.data.redis.samples.retwis.Range;
 import org.springframework.data.redis.samples.retwis.RetwisSecurity;
+import org.springframework.data.redis.samples.retwis.web.WebPost;
 import org.springframework.util.StringUtils;
 
 /**
@@ -98,22 +101,43 @@ public class RedisTwitter {
 		valueOps.set("user:" + name + ":uid", uid);
 
 		// track name
-		users.add(name);
+		users.addFirst(name);
 
 		return addAuth(name);
 	}
 
-	public List<Post> getPosts(String uid, Range range) {
-		List<String> pids = new DefaultRedisList<String>("posts:" + uid, template).range(range.being, range.end);
-		return addReplyLinks(convertPidsToPosts(pids));
+	public List<WebPost> getPost(String pid) {
+		return convertPidsToPosts(Collections.singleton(pid));
 	}
 
-	private Post findPost(String pid) {
+	public List<WebPost> getPosts(String uid, Range range) {
+		List<String> pids = new DefaultRedisList<String>("posts:" + uid, template).range(range.being, range.end);
+		return convertPidsToPosts(pids);
+	}
+
+	private WebPost convertPost(String pid) {
 		Post post = new Post().fromMap(post(pid));
-		post.setName(findName(post.getUid()));
-		post.setReplyName(findName(post.getReplyUid()));
-		post.setPid(pid);
-		return post;
+		System.out.println("Loaded post " + post);
+		WebPost wPost = new WebPost(post);
+		wPost.setPid(pid);
+		wPost.setName(findName(post.getUid()));
+		wPost.setReplyTo(findName(post.getReplyUid()));
+		wPost.setContent(replaceReplies(post.getContent()));
+		return wPost;
+	}
+
+	private String replaceReplies(String content) {
+		Matcher regexMatcher = MENTION_REGEX.matcher(content);
+		while (regexMatcher.find()) {
+			String match = regexMatcher.group();
+			int start = regexMatcher.start();
+			int stop = regexMatcher.end();
+
+
+			content = content.substring(0, start) + "<a href=\"!" + match.substring(1) + "\">" + match + "</a>"
+					+ content.substring(stop);
+		}
+		return content;
 	}
 
 	public Set<String> getFollowers(String uid) {
@@ -124,39 +148,47 @@ public class RedisTwitter {
 		return covertUidToNames(following(uid));
 	}
 
-	public List<Post> getMentions(String uid, Range range) {
+	public List<WebPost> getMentions(String uid, Range range) {
 		return convertPidsToPosts(mentions(uid).range(range.being, range.end));
 	}
 
-	public Collection<Post> timeline(Range range) {
-		return addReplyLinks(convertPidsToPosts(timeline.range(range.being, range.end)));
+	public Collection<WebPost> timeline(Range range) {
+		return convertPidsToPosts(timeline.range(range.being, range.end));
 	}
 
 	public Collection<String> newUsers(Range range) {
 		return users.range(range.being, range.end);
 	}
 
-	public void post(String username, Post post) {
+	public void post(String username, WebPost post) {
+		System.out.println("Received post " + post);
+		Post p = post.asPost();
 
 		String uid = findUid(username);
-		post.setUid(uid);
+		p.setUid(uid);
 
 		String pid = postIdGenerator.generate();
-		post.setPid(pid);
+		String replyName = post.getReplyTo();
+		if (StringUtils.hasText(replyName)) {
+			String mentionUid = findUid(replyName);
+			p.setReplyUid(mentionUid);
+			mentions(mentionUid).addFirst(pid);
+			p.setReplyPid(post.getReplyPid());
+		}
 
+		System.out.println("About to save post " + p);
 		// add post
-		post(pid).putAll(post.asMap());
+		post(pid).putAll(p.asMap());
 
 		// add links
-		new DefaultRedisList<String>("posts:" + uid, template).addFirst(pid);
+		posts(uid).addFirst(pid);
 		timeline.addFirst(pid);
 
-		handleMentions(post);
+		handleMentions(p, pid);
 	}
 
-	private void handleMentions(Post post) {
+	private void handleMentions(Post post, String pid) {
 		// find mentions
-		String pid = post.getPid();
 		Collection<String> mentions = findMentions(post.getContent());
 		for (String mention : mentions) {
 			String uid = findUid(mention);
@@ -173,6 +205,11 @@ public class RedisTwitter {
 	public boolean isUserValid(String name) {
 		return template.hasKey("user:" + name + ":uid");
 	}
+
+	public boolean isPostValid(String pid) {
+		return template.hasKey("pid:" + pid);
+	}
+
 
 	private String findName(String uid) {
 		BoundHashOperations<String, String, String> userOps = template.boundHashOps("uid:" + uid);
@@ -266,6 +303,10 @@ public class RedisTwitter {
 		return new DefaultRedisMap<String, String>("pid:" + pid, template);
 	}
 
+	private BlockingDeque<String> posts(String uid) {
+		return new DefaultRedisList<String>("posts:" + uid, template);
+	}
+
 	private Set<String> covertUidToNames(Set<String> uids) {
 		Set<String> set = new LinkedHashSet<String>(uids.size());
 
@@ -275,41 +316,17 @@ public class RedisTwitter {
 		return set;
 	}
 
-	private List<Post> convertPidsToPosts(Collection<String> pids) {
-		List<Post> posts = new ArrayList<Post>(pids.size());
+	private List<WebPost> convertPidsToPosts(Collection<String> pids) {
+		List<WebPost> posts = new ArrayList<WebPost>(pids.size());
 
 		//FIXME: add basic mapping mechanism
 		//FIXME: optimize this N+1
 		for (String pid : pids) {
-			posts.add(findPost(pid));
+			posts.add(convertPost(pid));
 		}
 
 		return posts;
 	}
-
-	private List<Post> addReplyLinks(List<Post> posts) {
-		for (Post post : posts) {
-			String content = post.getContent();
-			Matcher regexMatcher = MENTION_REGEX.matcher(content);
-			boolean replace = false;
-
-			while (regexMatcher.find()) {
-				replace = true;
-				String match = regexMatcher.group();
-				int start = regexMatcher.start();
-				int stop = regexMatcher.end();
-
-
-				content = content.substring(0, start) + "<a href=\"!" + match.substring(1) + "\">" + match + "</a>"
-						+ content.substring(stop);
-			}
-			if (replace) {
-				post.setContent(content);
-			}
-		}
-		return posts;
-	}
-
 
 	public static Collection<String> findMentions(String content) {
 		Matcher regexMatcher = MENTION_REGEX.matcher(content);

@@ -27,11 +27,10 @@ import org.springframework.data.redis.samples.retwis.redis.RedisTwitter;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * Annotation-driven controller for Retwis.
@@ -50,11 +49,11 @@ public class RetwisController {
 	}
 
 	@RequestMapping("/")
-	public String root() {
-		// FIXME: redirect from / authenticated users
-		// land page is signin
-		// in case the user is authenticated, the cookie should interceptor redirects accordingly
-		return "signin";
+	public String root(Model model) {
+		if (RetwisSecurity.isSignedIn()) {
+			return "redirect:/!" + RetwisSecurity.getName();
+		}
+		return timeline(model);
 	}
 
 	@RequestMapping("/signUp")
@@ -88,7 +87,7 @@ public class RetwisController {
 	}
 
 	@RequestMapping(value = "/!{name}", method = RequestMethod.GET)
-	public String posts(@PathVariable String name, Model model) {
+	public String posts(@PathVariable String name, @RequestParam(required = false) String replyto, @RequestParam(required = false) String replypid, Model model) {
 		checkUser(name);
 
 		String targetUid = twitter.findUid(name);
@@ -97,7 +96,9 @@ public class RetwisController {
 		model.addAttribute("posts", twitter.getPosts(targetUid, new Range()));
 		model.addAttribute("followers", twitter.getFollowers(targetUid));
 		model.addAttribute("following", twitter.getFollowing(targetUid));
-		if (RetwisSecurity.isSignedIn()) {
+		model.addAttribute("replyTo", replyto);
+		model.addAttribute("replyPid", replypid);
+		if (RetwisSecurity.isSignedIn() && !targetUid.equals(RetwisSecurity.getUid())) {
 			model.addAttribute("also_followed", twitter.alsoFollowed(RetwisSecurity.getUid(), targetUid));
 			model.addAttribute("common_followers", twitter.commonFollowers(RetwisSecurity.getUid(), targetUid));
 			model.addAttribute("follows", twitter.isFollowing(RetwisSecurity.getUid(), targetUid));
@@ -107,8 +108,9 @@ public class RetwisController {
 	}
 
 	@RequestMapping(value = "/!{name}", method = RequestMethod.POST)
-	public String posts(@PathVariable String name, @ModelAttribute Post post, Model model) {
+	public String posts(@PathVariable String name, WebPost post, Model model, HttpServletRequest request) {
 		checkUser(name);
+		System.out.println("Received post" + post + "|" + request.getParameterMap());
 		twitter.post(name, post);
 		return "redirect:/!" + name;
 	}
@@ -136,9 +138,10 @@ public class RetwisController {
 	}
 
 	@RequestMapping("/timeline")
-	public void timeline(Model model) {
+	public String timeline(Model model) {
 		model.addAttribute("posts", twitter.timeline(new Range()));
 		model.addAttribute("users", twitter.newUsers(new Range()));
+		return "timeline";
 	}
 
 	@RequestMapping("/logout")
@@ -149,16 +152,28 @@ public class RetwisController {
 		return "redirect:/";
 	}
 
+	@RequestMapping("/status")
+	public String status(String pid, Model model) {
+		checkPost(pid);
+		model.addAttribute("posts", twitter.getPost(pid));
+		return "status";
+	}
+
 	private void checkUser(String username) {
 		if (!twitter.isUserValid(username)) {
-			throw new NoSuchUserException(username);
+			throw new NoSuchDataException(username);
 		}
 	}
 
-	@ExceptionHandler(NoSuchUserException.class)
-	public ModelAndView handleNoUserException(NoSuchUserException ex, HttpServletRequest request) {
-		ModelAndView mav = new ModelAndView("nouser");
-		mav.addObject("user", ex.getUsername());
-		return mav;
+	private void checkPost(String pid) {
+		if (!twitter.isPostValid(pid)) {
+			throw new NoSuchDataException(pid);
+		}
+	}
+
+	@ExceptionHandler(NoSuchDataException.class)
+	public String handleNoUserException(NoSuchDataException ex, Model model) {
+		model.addAttribute("data", ex.getData());
+		return "nodata";
 	}
 }

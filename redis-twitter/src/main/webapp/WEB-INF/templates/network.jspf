@@ -1,6 +1,6 @@
-<div class="network" id="rightcol">
+<div class="span-7 last" id="rightcol">
   <c:if test="${!empty in_common}">
-  	 <div class="common">
+  	 <div class="span-8 box">
         <h4>You both follow:</h4>
 		<c:forEach var="c" items="${in_common}">
 		   <ul class="user-list">
@@ -9,9 +9,8 @@
 		</c:forEach>
      </div>
   </c:if>
-  
-  <div class="followers">
-  	<h4>Follower<c:if test="${fn:length(followers) ne 1}">s</c:if></h4>
+  <div class="span-7 box">
+  	<h4>Follower<c:if test="${fn:length(followers) ne 1}">s</c:if>: ${fn:length(followers)}</h4>
 	
 	<c:forEach var="f" items="${followers}">
 	   <ul class="user-list">
@@ -20,12 +19,12 @@
 	</c:forEach>
 	<c:if test="${more_followers}">and more...</c:if>
   </div>
-  <div class="following">
-  	<h4>Following</h4>
+  <div class="span-7 box">
+  	<h4>Following: ${fn:length(following)}</h4>
 	
 	<c:forEach var="f" items="${following}">
 	   <ul class="user-list">
-	     <a href="!${f}"/>${f}</a>
+	     <li><a href="!${f}"/>${f}</a></li>
 	   </ul>
 	</c:forEach>
 	<c:if test="${more_following}">and more...</c:if>

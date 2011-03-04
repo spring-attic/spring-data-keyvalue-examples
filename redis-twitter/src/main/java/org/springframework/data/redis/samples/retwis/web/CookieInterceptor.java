@@ -23,7 +23,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.data.redis.samples.retwis.RetwisSecurity;
 import org.springframework.data.redis.samples.retwis.redis.RedisTwitter;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 /**
@@ -41,37 +40,21 @@ public class CookieInterceptor extends HandlerInterceptorAdapter {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		// all non-root requests get analyzed
-		String requestURI = request.getRequestURI();
-		String context = request.getContextPath();
-		
-		if (!context.endsWith("/")) {
-			context = context + "/";
-		}
-		// login page - we don't intercept it
-		if (requestURI.equals(context) || requestURI.endsWith("/signUp") || requestURI.endsWith("/signIn")) {
-			return true;
-		}
-		if (StringUtils.hasText(requestURI)) {
-			Cookie[] cookies = request.getCookies();
+		Cookie[] cookies = request.getCookies();
 
-			if (!ObjectUtils.isEmpty(cookies)) {
-				for (Cookie cookie : cookies) {
-					if (RETWIS_COOKIE.equals(cookie.getName())) {
-						String auth = cookie.getValue();
-						if (twitter.isAuthValid(auth)) {
-							String name = twitter.findNameForAuth(auth);
-							String uid = twitter.findUid(name);
-							RetwisSecurity.setUser(name, uid);
-							return true;
-						}
+		if (!ObjectUtils.isEmpty(cookies)) {
+			for (Cookie cookie : cookies) {
+				if (RETWIS_COOKIE.equals(cookie.getName())) {
+					String auth = cookie.getValue();
+					if (twitter.isAuthValid(auth)) {
+						String name = twitter.findNameForAuth(auth);
+						String uid = twitter.findUid(name);
+						RetwisSecurity.setUser(name, uid);
 					}
 				}
+
 			}
-
-			response.sendRedirect(context);
-			return false;
 		}
-
 		return true;
 	}
 

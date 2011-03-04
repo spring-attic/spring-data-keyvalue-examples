@@ -1,28 +1,39 @@
 <h2><c:if test="${loggedUser eq name}"><fmt:message key="welcome"/> </c:if>${name}</h2>
 
-<c:choose>
+<div class="span-16" id="maincol">
+ <c:choose>
   <c:when test="${loggedUser eq name}">
-<form:form commandName="post" method="post" action="!${name}">
-  <table>
-    <tr>
-      <th>
-        <i>${name}</i>, what's on your mind? (Why not say hi to <a href="!costinl">@costinl</a> ?)<br/>
-        <br/>
-        <form:textarea path="content" rows="3" columns="70"></form:textarea><br />
-      </th>
-    </tr>
-    <tr>
-      <td>
-        <p class="submit"><input type="submit" value="Update"/></p>
-      </td>
-    </tr>
-  </table>
-</form:form>
-Home
- </c:when>
-<c:otherwise>
-<%@ include file="/WEB-INF/templates/userFollow.jspf" %>
-</c:otherwise>
+  <div id="updateform" class="box">
+	<form method="post" action="!${name}">
+	  <c:choose>
+	  	<c:when test="${!empty replyTo}">
+	  	Reply to <i>${replyTo}</i>:
+	  	</c:when>
+	  	<c:otherwise>
+	  	<i>${name}</i>, what's happening?
+	  	</c:otherwise>
+	  </c:choose>
+      <textarea name="content" rows="3" columns="70"><c:if test="${!empty replyTo}">@${replyTo} </c:if></textarea><br />
+      <input type="hidden" name="replyTo" value="${replyTo}"/>
+      <input type="hidden" name="replyPid" value="${replyPid}"/>
+      <input type="submit" value="Update"/>
+	</form>
+  </div>
+  </c:when>
+  <c:otherwise>
+  	<c:if test="${loggedIn}">
+  	  <%@ include file="/WEB-INF/templates/userFollow.jspf" %>
+  	</c:if>
+  </c:otherwise>
 </c:choose>
+</div>
+
+<c:if test="${!loggedIn}">
+ <div class="span-7" id="rightcol">
+  <a href="timeline">Timeline</a>
+  </div>
+</c:if>
+
+
 <%@ include file="/WEB-INF/templates/posts.jspf" %>
 <%@ include file="/WEB-INF/templates/network.jspf" %>
