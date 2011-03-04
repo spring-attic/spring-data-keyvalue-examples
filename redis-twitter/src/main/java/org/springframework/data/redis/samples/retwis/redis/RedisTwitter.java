@@ -23,7 +23,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.BlockingDeque;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -111,8 +110,11 @@ public class RedisTwitter {
 	}
 
 	public List<WebPost> getPosts(String uid, Range range) {
-		List<String> pids = new DefaultRedisList<String>("posts:" + uid, template).range(range.being, range.end);
-		return convertPidsToPosts(pids);
+		return convertPidsToPosts(posts(uid).range(range.being, range.end));
+	}
+
+	public List<WebPost> getTimeline(String uid, Range range) {
+		return convertPidsToPosts(timeline(uid).range(range.being, range.end));
 	}
 
 	private WebPost convertPost(String pid) {
@@ -132,9 +134,11 @@ public class RedisTwitter {
 			int start = regexMatcher.start();
 			int stop = regexMatcher.end();
 
-
-			content = content.substring(0, start) + "<a href=\"!" + match.substring(1) + "\">" + match + "</a>"
-					+ content.substring(stop);
+			String uName = match.substring(1);
+			if (isUserValid(uName)) {
+				content = content.substring(0, start) + "<a href=\"!" + uName + "\">" + match + "</a>"
+						+ content.substring(stop);
+			}
 		}
 		return content;
 	}
@@ -178,8 +182,15 @@ public class RedisTwitter {
 
 		// add links
 		posts(uid).addFirst(pid);
-		timeline.addFirst(pid);
+		timeline(uid).addFirst(pid);
 
+		// update followers
+		for (String follower : followers(uid)) {
+			timeline(follower).addFirst(pid);
+		};
+
+
+		timeline.addFirst(pid);
 		handleMentions(p, pid);
 	}
 
@@ -283,6 +294,10 @@ public class RedisTwitter {
 		return covertUidToNames(following(uid).intersect(following(targetUid)));
 	}
 
+	private RedisList<String> timeline(String uid) {
+		return new DefaultRedisList<String>("uid:" + uid + ":timeline", template);
+	}
+
 	private RedisSet<String> following(String uid) {
 		return new DefaultRedisSet<String>("uid:" + uid + ":following", template);
 	}
@@ -299,7 +314,7 @@ public class RedisTwitter {
 		return new DefaultRedisMap<String, String>("pid:" + pid, template);
 	}
 
-	private BlockingDeque<String> posts(String uid) {
+	private RedisList<String> posts(String uid) {
 		return new DefaultRedisList<String>("posts:" + uid, template);
 	}
 

@@ -49,6 +49,11 @@ public abstract class RetwisSecurity {
 		user.set(userInfo);
 	}
 
+	public static boolean isUserSignedIn(String name) {
+		UserInfo userInfo = user.get();
+		return userInfo != null && userInfo.name.equals(name);
+	}
+
 	public static boolean isSignedIn() {
 		return StringUtils.hasText(getName());
 	}

@@ -93,16 +93,23 @@ public class RetwisController {
 		String targetUid = twitter.findUid(name);
 		model.addAttribute("post", new Post());
 		model.addAttribute("name", name);
-		model.addAttribute("posts", twitter.getPosts(targetUid, new Range()));
 		model.addAttribute("followers", twitter.getFollowers(targetUid));
 		model.addAttribute("following", twitter.getFollowing(targetUid));
-		model.addAttribute("replyTo", replyto);
-		model.addAttribute("replyPid", replypid);
-		if (RetwisSecurity.isSignedIn() && !targetUid.equals(RetwisSecurity.getUid())) {
-			model.addAttribute("also_followed", twitter.alsoFollowed(RetwisSecurity.getUid(), targetUid));
-			model.addAttribute("common_followers", twitter.commonFollowers(RetwisSecurity.getUid(), targetUid));
-			model.addAttribute("follows", twitter.isFollowing(RetwisSecurity.getUid(), targetUid));
+
+		if (RetwisSecurity.isSignedIn()) {
+			model.addAttribute("replyTo", replyto);
+			model.addAttribute("replyPid", replypid);
+
+			if (!targetUid.equals(RetwisSecurity.getUid())) {
+				model.addAttribute("also_followed", twitter.alsoFollowed(RetwisSecurity.getUid(), targetUid));
+				model.addAttribute("common_followers", twitter.commonFollowers(RetwisSecurity.getUid(), targetUid));
+				model.addAttribute("follows", twitter.isFollowing(RetwisSecurity.getUid(), targetUid));
+			}
 		}
+
+		model.addAttribute("posts", (RetwisSecurity.isUserSignedIn(targetUid) ? twitter.getTimeline(targetUid,
+				new Range())
+				: twitter.getPosts(targetUid, new Range())));
 
 		return "home";
 	}
