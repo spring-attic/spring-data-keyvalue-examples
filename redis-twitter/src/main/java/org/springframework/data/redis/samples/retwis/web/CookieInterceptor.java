@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.data.redis.samples.retwis.RetwisSecurity;
-import org.springframework.data.redis.samples.retwis.redis.RedisTwitter;
+import org.springframework.data.redis.samples.retwis.redis.RetwisRepository;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -35,7 +35,7 @@ public class CookieInterceptor extends HandlerInterceptorAdapter {
 	public static final String RETWIS_COOKIE = "retwisauth";
 
 	@Inject
-	private RedisTwitter twitter;
+	private RetwisRepository twitter;
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -46,13 +46,12 @@ public class CookieInterceptor extends HandlerInterceptorAdapter {
 			for (Cookie cookie : cookies) {
 				if (RETWIS_COOKIE.equals(cookie.getName())) {
 					String auth = cookie.getValue();
-					if (twitter.isAuthValid(auth)) {
-						String name = twitter.findNameForAuth(auth);
+					String name = twitter.findNameForAuth(auth);
+					if (name != null) {
 						String uid = twitter.findUid(name);
 						RetwisSecurity.setUser(name, uid);
 					}
 				}
-
 			}
 		}
 		return true;

@@ -1,1 +1,1 @@
-<h2><fmt:message key="nouser"/> ${name}</h2>
+<h2><fmt:message key="nodata"/> <fmt:message key="${nodatatype}"/>: ${name}</h2>

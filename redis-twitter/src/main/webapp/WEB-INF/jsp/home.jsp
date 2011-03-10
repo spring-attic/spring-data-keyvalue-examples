@@ -26,14 +26,12 @@
   	</c:if>
   </c:otherwise>
 </c:choose>
-</div>
 
 <c:if test="${!loggedIn}">
- <div class="span-7" id="rightcol">
   <a href="timeline">Timeline</a>
-  </div>
 </c:if>
+</div>
 
-
-<%@ include file="/WEB-INF/templates/posts.jspf" %>
 <%@ include file="/WEB-INF/templates/network.jspf" %>
+<%@ include file="/WEB-INF/templates/posts.jspf" %>
+

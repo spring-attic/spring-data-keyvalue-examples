@@ -19,8 +19,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -30,8 +33,14 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.springframework.data.keyvalue.redis.core.BoundHashOperations;
+import org.springframework.data.keyvalue.redis.core.BulkMapper;
 import org.springframework.data.keyvalue.redis.core.StringRedisTemplate;
 import org.springframework.data.keyvalue.redis.core.ValueOperations;
+import org.springframework.data.keyvalue.redis.core.query.SortQuery;
+import org.springframework.data.keyvalue.redis.core.query.SortQueryBuilder;
+import org.springframework.data.keyvalue.redis.hash.DecoratingStringHashMapper;
+import org.springframework.data.keyvalue.redis.hash.HashMapper;
+import org.springframework.data.keyvalue.redis.hash.JacksonHashMapper;
 import org.springframework.data.keyvalue.redis.support.atomic.RedisAtomicLong;
 import org.springframework.data.keyvalue.redis.support.collections.DefaultRedisList;
 import org.springframework.data.keyvalue.redis.support.collections.DefaultRedisMap;
@@ -39,8 +48,7 @@ import org.springframework.data.keyvalue.redis.support.collections.DefaultRedisS
 import org.springframework.data.keyvalue.redis.support.collections.RedisList;
 import org.springframework.data.keyvalue.redis.support.collections.RedisMap;
 import org.springframework.data.keyvalue.redis.support.collections.RedisSet;
-import org.springframework.data.redis.samples.Post;
-import org.springframework.data.redis.samples.retwis.PostIdGenerator;
+import org.springframework.data.redis.samples.retwis.Post;
 import org.springframework.data.redis.samples.retwis.Range;
 import org.springframework.data.redis.samples.retwis.RetwisSecurity;
 import org.springframework.data.redis.samples.retwis.web.WebPost;
@@ -52,25 +60,26 @@ import org.springframework.util.StringUtils;
  * @author Costin Leau
  */
 @Named
-public class RedisTwitter {
+public class RetwisRepository {
 
 	private static final Pattern MENTION_REGEX = Pattern.compile("@[\\w]+");
 
-
 	private final StringRedisTemplate template;
 	private final ValueOperations<String, String> valueOps;
-	// post id generator
-	private final PostIdGenerator postIdGenerator;
-	// user id generator
+
+	private final LongGenerator postIdGenerator;
 	private final RedisAtomicLong userIdCounter;
 
-	// track users
+	// global users
 	private RedisList<String> users;
-	// time-line
+	// global timeline
 	private final RedisList<String> timeline;
 
+	private final HashMapper<Post, String, String> postMapper = new DecoratingStringHashMapper<Post>(
+			new JacksonHashMapper<Post>(Post.class));
+
 	@Inject
-	public RedisTwitter(StringRedisTemplate template) {
+	public RetwisRepository(StringRedisTemplate template) {
 		this.template = template;
 		valueOps = template.opsForValue();
 
@@ -80,67 +89,30 @@ public class RedisTwitter {
 		postIdGenerator = new LongGenerator(new RedisAtomicLong("global:pid", template.getConnectionFactory()));
 	}
 
-	/**
-	 * Adds the given user into the system and fills up the missing links. 
-	 *  
-	 * @param user
-	 * @return
-	 */
 	public String addUser(String name, String password) {
 		String uid = String.valueOf(userIdCounter.incrementAndGet());
 
-		// FIXME: add functionality into the template
 		// save user as hash
 		// uid -> user
 		BoundHashOperations<String, String, String> userOps = template.boundHashOps("uid:" + uid);
 		userOps.put("name", name);
 		userOps.put("pass", password);
-
-		// link name -> uid
 		valueOps.set("user:" + name + ":uid", uid);
 
-		// track name
 		users.addFirst(name);
-
 		return addAuth(name);
 	}
 
 	public List<WebPost> getPost(String pid) {
-		return convertPidsToPosts(Collections.singleton(pid));
+		return Collections.singletonList(convertPost(pid, post(pid)));
 	}
 
 	public List<WebPost> getPosts(String uid, Range range) {
-		return convertPidsToPosts(posts(uid).range(range.being, range.end));
+		return convertPidsToPosts("uid:" + uid + ":posts", range);
 	}
 
 	public List<WebPost> getTimeline(String uid, Range range) {
-		return convertPidsToPosts(timeline(uid).range(range.being, range.end));
-	}
-
-	private WebPost convertPost(String pid) {
-		Post post = new Post().fromMap(post(pid));
-		WebPost wPost = new WebPost(post);
-		wPost.setPid(pid);
-		wPost.setName(findName(post.getUid()));
-		wPost.setReplyTo(findName(post.getReplyUid()));
-		wPost.setContent(replaceReplies(post.getContent()));
-		return wPost;
-	}
-
-	private String replaceReplies(String content) {
-		Matcher regexMatcher = MENTION_REGEX.matcher(content);
-		while (regexMatcher.find()) {
-			String match = regexMatcher.group();
-			int start = regexMatcher.start();
-			int stop = regexMatcher.end();
-
-			String uName = match.substring(1);
-			if (isUserValid(uName)) {
-				content = content.substring(0, start) + "<a href=\"!" + uName + "\">" + match + "</a>"
-						+ content.substring(stop);
-			}
-		}
-		return content;
+		return convertPidsToPosts("uid:" + uid + ":timeline", range);
 	}
 
 	public Set<String> getFollowers(String uid) {
@@ -152,11 +124,11 @@ public class RedisTwitter {
 	}
 
 	public List<WebPost> getMentions(String uid, Range range) {
-		return convertPidsToPosts(mentions(uid).range(range.being, range.end));
+		return convertPidsToPosts("uid:" + uid + ":mentions", range);
 	}
 
 	public Collection<WebPost> timeline(Range range) {
-		return convertPidsToPosts(timeline.range(range.being, range.end));
+		return convertPidsToPosts("timeline", range);
 	}
 
 	public Collection<String> newUsers(Range range) {
@@ -170,6 +142,7 @@ public class RedisTwitter {
 		p.setUid(uid);
 
 		String pid = postIdGenerator.generate();
+
 		String replyName = post.getReplyTo();
 		if (StringUtils.hasText(replyName)) {
 			String mentionUid = findUid(replyName);
@@ -177,8 +150,9 @@ public class RedisTwitter {
 			mentions(mentionUid).addFirst(pid);
 			p.setReplyPid(post.getReplyPid());
 		}
+
 		// add post
-		post(pid).putAll(p.asMap());
+		post(pid).putAll(postMapper.toHash(p));
 
 		// add links
 		posts(uid).addFirst(pid);
@@ -187,8 +161,7 @@ public class RedisTwitter {
 		// update followers
 		for (String follower : followers(uid)) {
 			timeline(follower).addFirst(pid);
-		};
-
+		}
 
 		timeline.addFirst(pid);
 		handleMentions(p, pid);
@@ -197,6 +170,7 @@ public class RedisTwitter {
 	private void handleMentions(Post post, String pid) {
 		// find mentions
 		Collection<String> mentions = findMentions(post.getContent());
+
 		for (String mention : mentions) {
 			String uid = findUid(mention);
 			if (uid != null) {
@@ -219,13 +193,11 @@ public class RedisTwitter {
 
 
 	private String findName(String uid) {
+		if (!StringUtils.hasText(uid)) {
+			return "";
+		}
 		BoundHashOperations<String, String, String> userOps = template.boundHashOps("uid:" + uid);
 		return userOps.get("name");
-	}
-
-	public boolean isAuthValid(String value) {
-		String uid = valueOps.get("auth:" + value);
-		return (uid != null);
 	}
 
 	public boolean auth(String user, String pass) {
@@ -244,12 +216,6 @@ public class RedisTwitter {
 		return findName(uid);
 	}
 
-	/**
-	 * Adds auth key to Redis for the given name.
-	 * 
-	 * @param uid
-	 * @return
-	 */
 	public String addAuth(String name) {
 		String uid = findUid(name);
 		// add random auth key relation
@@ -294,6 +260,8 @@ public class RedisTwitter {
 		return covertUidToNames(following(uid).intersect(following(targetUid)));
 	}
 
+	// collections mapping the core data structures
+
 	private RedisList<String> timeline(String uid) {
 		return new DefaultRedisList<String>("uid:" + uid + ":timeline", template);
 	}
@@ -315,7 +283,25 @@ public class RedisTwitter {
 	}
 
 	private RedisList<String> posts(String uid) {
-		return new DefaultRedisList<String>("posts:" + uid, template);
+		return new DefaultRedisList<String>("uid:" + uid + ":posts", template);
+	}
+
+	// various util methods
+
+	private String replaceReplies(String content) {
+		Matcher regexMatcher = MENTION_REGEX.matcher(content);
+		while (regexMatcher.find()) {
+			String match = regexMatcher.group();
+			int start = regexMatcher.start();
+			int stop = regexMatcher.end();
+
+			String uName = match.substring(1);
+			if (isUserValid(uName)) {
+				content = content.substring(0, start) + "<a href=\"!" + uName + "\">" + match + "</a>"
+						+ content.substring(stop);
+			}
+		}
+		return content;
 	}
 
 	private Set<String> covertUidToNames(Set<String> uids) {
@@ -327,16 +313,45 @@ public class RedisTwitter {
 		return set;
 	}
 
-	private List<WebPost> convertPidsToPosts(Collection<String> pids) {
-		List<WebPost> posts = new ArrayList<WebPost>(pids.size());
+	private List<WebPost> convertPidsToPosts(String key, Range range) {
+		String pid = "pid:*->";
+		final String pidKey = "#";
+		final String uid = "uid";
+		final String content = "content";
+		final String replyPid = "replyPid";
+		final String replyUid = "replyUid";
 
-		//FIXME: add basic mapping mechanism
-		//FIXME: optimize this N+1
-		for (String pid : pids) {
-			posts.add(convertPost(pid));
-		}
+		SortQuery<String> query = SortQueryBuilder.sort(key).noSort().
+				get(pidKey).get(pid + uid).get(pid + content).get(pid+replyPid).get(pid+replyUid).
+				limit(range.being, range.end).build();
+		BulkMapper<WebPost, String> hm = new BulkMapper<WebPost, String>() {
+			@Override
+			public WebPost mapBulk(Iterator<String> bulk) {
+				Map<String, String> map = new LinkedHashMap<String, String>();
+				String pid = bulk.next();
+				map.put(uid, bulk.next());
+				map.put(content, bulk.next());
+				map.put(replyPid, bulk.next());
+				map.put(replyUid, bulk.next());
 
-		return posts;
+				return convertPost(pid, map);
+			}
+		};
+		List<WebPost> sort = template.sort(query, hm);
+
+		return sort;
+	}
+
+	// FIXME: eliminate this n+1 calls
+	// potentially do another sort query to find all the names in one go
+	private WebPost convertPost(String pid, Map hash) {
+		Post post = postMapper.fromHash(hash);
+		WebPost wPost = new WebPost(post);
+		wPost.setPid(pid);
+		wPost.setName(findName(post.getUid()));
+		wPost.setReplyTo(findName(post.getReplyUid()));
+		wPost.setContent(replaceReplies(post.getContent()));
+		return wPost;
 	}
 
 	public static Collection<String> findMentions(String content) {

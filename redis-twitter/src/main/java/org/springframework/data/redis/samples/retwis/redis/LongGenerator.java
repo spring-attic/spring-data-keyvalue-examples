@@ -19,14 +19,13 @@ import javax.inject.Inject;
 
 import org.springframework.data.keyvalue.redis.core.RedisOperations;
 import org.springframework.data.keyvalue.redis.support.atomic.RedisAtomicLong;
-import org.springframework.data.redis.samples.retwis.PostIdGenerator;
 
 /**
  * Generator using a Redis counter underneath.
  * 
  * @author Costin Leau
  */
-public class LongGenerator implements PostIdGenerator {
+public class LongGenerator {
 	private final RedisAtomicLong counter;
 
 	public LongGenerator(String counterName, RedisOperations<String, Long> operations) {
@@ -38,7 +37,6 @@ public class LongGenerator implements PostIdGenerator {
 		this.counter = counter;
 	}
 
-	@Override
 	public String generate() {
 		return String.valueOf(counter.incrementAndGet());
 	}

@@ -15,7 +15,7 @@
  */
 package org.springframework.data.redis.samples.retwis.web;
 
-import org.springframework.data.redis.samples.Post;
+import org.springframework.data.redis.samples.retwis.Post;
 
 /**
  * DTO suitable for presenting a Post through the Web UI.
@@ -54,6 +54,7 @@ public class WebPost {
 	public WebPost(Post post) {
 		this.time = WebUtils.timeInWords(Long.valueOf(post.getTime()));
 		this.replyPid = post.getReplyPid();
+		this.content = post.getContent();
 	}
 
 	/**

@@ -23,10 +23,13 @@ package org.springframework.data.redis.samples.retwis.web;
 public class NoSuchDataException extends RuntimeException {
 
 	private final String data;
+	private final boolean userRelated;
 
-	public NoSuchDataException(String data) {
+	public NoSuchDataException(String data, boolean userRelated) {
+
 		super("Invalid data " + data);
 		this.data = data;
+		this.userRelated = userRelated;
 	}
 
 	/**
@@ -36,5 +39,9 @@ public class NoSuchDataException extends RuntimeException {
 	 */
 	public String getData() {
 		return data;
+	}
+
+	public boolean isPost() {
+		return !userRelated;
 	}
 }

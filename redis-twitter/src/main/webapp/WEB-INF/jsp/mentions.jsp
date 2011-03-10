@@ -12,7 +12,7 @@
  </c:otherwise>
 </c:choose>
 </div>
-
-<%@ include file="/WEB-INF/templates/posts.jspf" %>
-<%@ include file="/WEB-INF/templates/network.jspf" %>
 </div>
+
+<%@ include file="/WEB-INF/templates/network.jspf" %>
+<%@ include file="/WEB-INF/templates/posts.jspf" %>

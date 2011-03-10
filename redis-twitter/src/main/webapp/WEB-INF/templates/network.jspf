@@ -1,6 +1,6 @@
-<div class="span-7 last" id="rightcol">
+<div class="span-8 last" id="rightcol">
   <c:if test="${!empty in_common}">
-  	 <div class="span-8 box">
+  	 <div class="span-7 box">
         <h4>You both follow:</h4>
 		<c:forEach var="c" items="${in_common}">
 		   <ul class="user-list">

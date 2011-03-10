@@ -13,10 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.data.redis.samples;
+package org.springframework.data.redis.samples.retwis;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * Class describing a post.
@@ -110,26 +108,6 @@ public class Post {
 	 */
 	public void setReplyUid(String replyUid) {
 		this.replyUid = replyUid;
-	}
-
-	public Map<String, String> asMap() {
-		Map<String, String> map = new LinkedHashMap<String, String>(5);
-		map.put("replyPid", replyPid);
-		map.put("replyUid", replyUid);
-		map.put("uid", uid);
-		map.put("content", content);
-		map.put("time", time);
-
-		return map;
-	}
-
-	public Post fromMap(Map<String, String> map) {
-		replyPid = map.get("replyPid");
-		replyUid = map.get("replyUid");
-		uid = map.get("uid");
-		content = map.get("content");
-		time = map.get("time");
-		return this;
 	}
 
 	@Override

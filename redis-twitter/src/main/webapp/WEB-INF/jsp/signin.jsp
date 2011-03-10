@@ -7,10 +7,15 @@
     <table>
       <tr>
         <td>username</td>
-       <td><input name="name" /></td>
+       <td><input  name="name" /></td>
       </tr>
       <tr>
         <td>password</td>
+        <div class=".error">
+	        <c:if test="${errorpass}">
+		        <fmt:message key="error.pass"/>
+		    </c:if>
+	    </div>
         <td><input type="password" name="pass" /></td>
       </tr>
     </table>
@@ -26,15 +31,25 @@
     <table>
       <tr>
         <td>username</td>
-        <td><input name="name" /></td>
+        <div class="div.error">
+	        <c:if test="${errorduplicateuser}">
+		        <fmt:message key="error.duplicateuser"/>
+		    </c:if>
+	    </div>
+        <td><input  name="name" /></td>
       </tr>
+      <div class="div.error">
+	      <c:if test="${errormatch}">
+		      <fmt:message key="error.match"/>
+		  </c:if>
+	  </div>
       <tr>
         <td>password</td>
-        <td><input type="password" name="pass" /></td>
+        <td><input  type="password" name="pass" /></td>
       </tr>
       <tr>
         <td>password again</td>
-        <td><input type="password" name="pass2" /></td>
+        <td><input  type="password" name="pass2" /></td>
       </tr>
     </table>
     <input type="submit" value="Sign Up">

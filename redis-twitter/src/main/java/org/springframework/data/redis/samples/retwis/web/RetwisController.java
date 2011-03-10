@@ -20,12 +20,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.samples.Post;
+import org.springframework.data.redis.samples.retwis.Post;
 import org.springframework.data.redis.samples.retwis.Range;
 import org.springframework.data.redis.samples.retwis.RetwisSecurity;
-import org.springframework.data.redis.samples.retwis.redis.RedisTwitter;
+import org.springframework.data.redis.samples.retwis.redis.RetwisRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,10 +42,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class RetwisController {
 
 	@Autowired
-	private final RedisTwitter twitter;
+	private final RetwisRepository twitter;
 
 	@Autowired
-	public RetwisController(RedisTwitter twitter) {
+	public RetwisController(RetwisRepository twitter) {
 		this.twitter = twitter;
 	}
 
@@ -57,8 +58,17 @@ public class RetwisController {
 	}
 
 	@RequestMapping("/signUp")
-	public String signUp(String name, String pass, String pass2, HttpServletResponse response) {
-		// FIXME: add pass check
+	public String signUp(String name, String pass, String pass2, Model model, HttpServletResponse response) {
+		if (twitter.isUserValid(name)) {
+			model.addAttribute("errorduplicateuser", Boolean.TRUE);
+			return "signin";
+		}
+
+		if (!StringUtils.hasText(pass) || !StringUtils.hasText(pass2) || !pass.equals(pass2)) {
+			model.addAttribute("errormatch", Boolean.TRUE);
+			return "signin";
+		}
+
 		String auth = twitter.addUser(name, pass);
 		addAuthCookie(auth, name, response);
 
@@ -66,11 +76,14 @@ public class RetwisController {
 	}
 
 	@RequestMapping("/signIn")
-	public String signIn(String name, String pass, HttpServletResponse response) {
+	public String signIn(String name, String pass, Model model, HttpServletResponse response) {
 		// add tracing cookie
 		if (twitter.auth(name, pass)) {
 			addAuthCookie(twitter.addAuth(name), name, response);
 			return "redirect:/!" + name;
+		}
+		else if (StringUtils.hasText(name) || StringUtils.hasText(pass)) {
+			model.addAttribute("errorpass", Boolean.TRUE);
 		}
 		// go back to sign in screen
 		return "signin";
@@ -167,19 +180,20 @@ public class RetwisController {
 
 	private void checkUser(String username) {
 		if (!twitter.isUserValid(username)) {
-			throw new NoSuchDataException(username);
+			throw new NoSuchDataException(username, true);
 		}
 	}
 
 	private void checkPost(String pid) {
 		if (!twitter.isPostValid(pid)) {
-			throw new NoSuchDataException(pid);
+			throw new NoSuchDataException(pid, false);
 		}
 	}
 
 	@ExceptionHandler(NoSuchDataException.class)
 	public String handleNoUserException(NoSuchDataException ex, Model model) {
 		model.addAttribute("data", ex.getData());
+		model.addAttribute("nodatatype", ex.isPost() ? "nodata.post" : "nodata.user");
 		return "nodata";
 	}
 }

@@ -19,7 +19,7 @@ import org.springframework.core.NamedThreadLocal;
 import org.springframework.util.StringUtils;
 
 /**
- * Simple security class that saves the local user info. 
+ * Simple security class that saves the local user info across each request.
  * 
  * @author Costin Leau
  */
