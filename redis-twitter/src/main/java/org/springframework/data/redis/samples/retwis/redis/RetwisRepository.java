@@ -121,7 +121,7 @@ public class RetwisRepository {
 	}
 
 	public Collection<String> getFollowing(String uid) {
-		return covertUidsToNames(KeyUtils.followers(uid));
+		return covertUidsToNames(KeyUtils.following(uid));
 	}
 
 	public List<WebPost> getMentions(String uid, Range range) {
@@ -148,7 +148,7 @@ public class RetwisRepository {
 		if (StringUtils.hasText(replyName)) {
 			String mentionUid = findUid(replyName);
 			p.setReplyUid(mentionUid);
-			mentions(mentionUid).addFirst(pid);
+			// handle mentions below
 			p.setReplyPid(post.getReplyPid());
 		}
 
@@ -165,10 +165,10 @@ public class RetwisRepository {
 		}
 
 		timeline.addFirst(pid);
-		handleMentions(p, pid);
+		handleMentions(p, pid, replyName);
 	}
 
-	private void handleMentions(Post post, String pid) {
+	private void handleMentions(Post post, String pid, String name) {
 		// find mentions
 		Collection<String> mentions = findMentions(post.getContent());
 
@@ -318,7 +318,7 @@ public class RetwisRepository {
 	}
 
 	private List<String> covertUidsToNames(String key) {
-		return template.sort(SortQueryBuilder.sort(key).noSort().get("user:*->name").build());
+		return template.sort(SortQueryBuilder.sort(key).noSort().get("uid:*->name").build());
 	}
 
 	private Set<String> covertUidToNames(Set<String> uids) {

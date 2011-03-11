@@ -152,7 +152,12 @@ public class RetwisController {
 	public String mentions(@PathVariable String name, Model model) {
 		checkUser(name);
 		model.addAttribute("name", name);
-		model.addAttribute("posts", twitter.getMentions(twitter.findUid(name), new Range()));
+		String targetUid = twitter.findUid(name);
+
+		model.addAttribute("posts", twitter.getMentions(targetUid, new Range()));
+		model.addAttribute("followers", twitter.getFollowers(targetUid));
+		model.addAttribute("following", twitter.getFollowing(targetUid));
+
 		return "mentions";
 	}
 

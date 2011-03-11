@@ -11,6 +11,7 @@
 
 	<head>
 	  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	  <meta http-equiv="Pragma" content="no-cache">
 	  <link rel="stylesheet" href="<c:url value="/static/styles/screen.css"/>" type="text/css" media="screen, projection"/>
 	  <link rel="stylesheet" href="<c:url value="/static/styles/print.css"/>" type="text/css" media="print"/> 
 	  <!--[if lt IE 8]>
