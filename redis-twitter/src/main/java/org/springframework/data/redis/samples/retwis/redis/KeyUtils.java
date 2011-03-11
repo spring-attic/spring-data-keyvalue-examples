@@ -79,4 +79,12 @@ abstract class KeyUtils {
 	static String globalPid() {
 		return "global:pid";
 	}
+
+	static String alsoFollowed(String uid, String targetUid) {
+		return UID + uid + ":also:uid:" + targetUid;
+	}
+
+	static String commonFollowers(String uid, String targetUid) {
+		return UID + uid + ":common:uid:" + targetUid;
+	}
 }

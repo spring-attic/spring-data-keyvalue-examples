@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -252,12 +253,24 @@ public class RetwisRepository {
 		followers(targetUid).remove(RetwisSecurity.getUid());
 	}
 
-	public Set<String> alsoFollowed(String uid, String targetUid) {
-		return covertUidToNames(following(uid).intersect(followers(targetUid)));
+	public List<String> alsoFollowed(String uid, String targetUid) {
+		RedisSet<String> tempSet = following(uid).intersectAndStore(followers(targetUid),
+				KeyUtils.alsoFollowed(uid, targetUid));
+
+		String key = tempSet.getKey();
+		template.expire(key, 5, TimeUnit.SECONDS);
+		
+		return covertUidsToNames(key);
 	}
 
-	public Set<String> commonFollowers(String uid, String targetUid) {
-		return covertUidToNames(following(uid).intersect(following(targetUid)));
+	public List<String> commonFollowers(String uid, String targetUid) {
+		RedisSet<String> tempSet = following(uid).intersectAndStore(following(targetUid),
+				KeyUtils.commonFollowers(uid, targetUid));
+
+		String key = tempSet.getKey();
+		template.expire(key, 5, TimeUnit.SECONDS);
+
+		return covertUidsToNames(key);
 	}
 
 	// collections mapping the core data structures
