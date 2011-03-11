@@ -1,11 +1,11 @@
 
 a {
   text-decoration: none;
-  color: blue;
+  color: #0c0;
 }
 
 a:visited {
-  color: blue;
+  color: green;
 }
 
 .right-align {
@@ -16,41 +16,45 @@ body {
   font-size: 100%;
 }
 
+.footer {
+  font-size: 85%;
+}
+
 .container {
 }
 
+
 #updateform {
-  background: #EEE;
-  margin: 10px;
+  background: #0c0;
+  margin: 5px;
 }
 
 .rightcolumn {
-  
+ 
 }
 
 .box {
-  padding: 10px;
-  margin: 10px;
+  padding: 7px;
+  margin: 5px;
   -moz-border-radius-bottomleft:5px;
   -moz-border-radius-bottomright:5px;
   -moz-border-radius-topleft:5px;
   -moz-border-radius-topright:5px;
-  background: #EEE;
+  background: #0c0;
 }
 
 textarea {
   height: 5em;
   width: 500px;
 }
-
 #posts {
-  margin: 10px;
-  padding: 10px;
+  margin: 5px;
+  padding: 5px;
 }
 
 #posts .date {
   font-size: 75%;
-  color: #999;
+  color: #909;
 }
 
 #posts hr {
@@ -58,14 +62,13 @@ textarea {
 }
 
 #posts .post {
-  border-top: 1px dashed #DDD;
-  padding-top: 10px;
-  padding-bottom: 10px;
+  border-top: 1px dashed #0c0;
+  padding-top: 5px;
+  padding-bottom: 5px;
 }
 
 .user-list li {
   list-style: none;
 }
 
-
-
+tbody tr:nth-child(even) td, tbody tr.even td {background:#0c0;}

@@ -1,9 +1,15 @@
-<h2><fmt:message key="welcome"/></h2>
+<h2 ><fmt:message key="welcome"/></h2>
 
 <div class="span-11 box">
   <h2>Sign In</h2>
   
   <form action="signIn" method="post">
+     <c:if test="${errorpass}">
+	    <div class="error">
+ 		    <fmt:message key="error.pass"/>
+		</div>
+  	</c:if>
+  
     <table>
       <tr>
         <td>username</td>
@@ -11,11 +17,6 @@
       </tr>
       <tr>
         <td>password</td>
-        <div class=".error">
-	        <c:if test="${errorpass}">
-		        <fmt:message key="error.pass"/>
-		    </c:if>
-	    </div>
         <td><input type="password" name="pass" /></td>
       </tr>
     </table>
@@ -24,25 +25,27 @@
   </form>
 </div>  
 
-<div class="span-11 last box">
+<div class="span-11 box last">
   <h2>Sign Up</h2>
-  
+
+   <c:if test="${errorduplicateuser}">
+	   <div class="error">
+    	   <fmt:message key="error.duplicateuser"/>
+       </div>
+   </c:if>
+
+   <c:if test="${errormatch}">
+      <div class="error">
+	     <fmt:message key="error.match"/>
+	  </div>
+   </c:if>
+	
   <form action="signUp" method="post">
     <table>
       <tr>
         <td>username</td>
-        <div class="div.error">
-	        <c:if test="${errorduplicateuser}">
-		        <fmt:message key="error.duplicateuser"/>
-		    </c:if>
-	    </div>
         <td><input  name="name" /></td>
       </tr>
-      <div class="div.error">
-	      <c:if test="${errormatch}">
-		      <fmt:message key="error.match"/>
-		  </c:if>
-	  </div>
       <tr>
         <td>password</td>
         <td><input  type="password" name="pass" /></td>

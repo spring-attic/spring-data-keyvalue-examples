@@ -24,9 +24,8 @@
       <div id="container">
       	  <div class="header" class="span-24">
       	  	  <div class="span-6">
-      	  	     <h2><a href="<c:url value="/"/>"">Retwis-J</a></h2>
+      	  	     <h3><a href="<c:url value="/"/>"">Retwis-J</a></h3>
       	  	  </div>
-      	  	  <br /><br />
 			  <div class="span-17 last right-align">
 			    <% 
 			    	pageContext.setAttribute("loggedIn", RetwisSecurity.isSignedIn(), PageContext.PAGE_SCOPE);
@@ -39,7 +38,7 @@
 			    	<a href="<c:url value="/timeline"/>">timeline</a>
 			    </c:if>
 			  </div>
-			  <hr />
+			  <hr/>
 		  </div>
 		  <div class="span-24">
     

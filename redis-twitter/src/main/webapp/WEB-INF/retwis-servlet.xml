@@ -19,8 +19,7 @@
         <bean class="org.springframework.data.redis.samples.retwis.web.CookieInterceptor" />
 	</mvc:interceptors>
 
-	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver"/>
-
+	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver"/>
 
 	<!--
 		- This bean configures the 'prefix' and 'suffix' properties of

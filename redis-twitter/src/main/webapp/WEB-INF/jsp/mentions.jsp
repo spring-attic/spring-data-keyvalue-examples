@@ -1,5 +1,5 @@
-<div class="span-16" id="maincol">
-<h2><fmt:message key="Mentions"/> ${name}</h2>
+<div class="span-15" id="maincol">
+<h3><fmt:message key="Mentions"/> ${name}</h3>
 
 <div class="box">
 <c:choose>

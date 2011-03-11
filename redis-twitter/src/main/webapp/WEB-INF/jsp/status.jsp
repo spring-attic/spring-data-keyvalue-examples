@@ -1,4 +1,4 @@
-<div class="span-16" id="maincol">
+<div class="span-15" id="maincol">
 <%@ include file="/WEB-INF/templates/posts.jspf" %>
 </div>
 <c:if test="${!loggedIn}">

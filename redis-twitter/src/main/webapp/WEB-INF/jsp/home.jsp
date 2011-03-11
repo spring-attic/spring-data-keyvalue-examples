@@ -1,6 +1,6 @@
-<h2><c:if test="${loggedUser eq name}"><fmt:message key="welcome"/> </c:if>${name}</h2>
+<h3><c:if test="${loggedUser eq name}"><fmt:message key="welcome"/> </c:if>${name}</h3>
 
-<div class="span-16" id="maincol">
+<div class="span-15">
  <c:choose>
   <c:when test="${loggedUser eq name}">
   <div id="updateform" class="box">
@@ -10,10 +10,10 @@
 	  	Reply to <i>${replyTo}</i>:
 	  	</c:when>
 	  	<c:otherwise>
-	  	<i>${name}</i>, what's happening?
+	  	<b><i>${name}</i></b>, what's happening?
 	  	</c:otherwise>
 	  </c:choose>
-      <textarea name="content" rows="3" columns="70"><c:if test="${!empty replyTo}">@${replyTo} </c:if></textarea><br />
+      <textarea name="content" rows="3" cols="60"><c:if test="${!empty replyTo}">@${replyTo} </c:if></textarea><br />
       <input type="hidden" name="replyTo" value="${replyTo}"/>
       <input type="hidden" name="replyPid" value="${replyPid}"/>
       <input type="submit" value="Update"/>
