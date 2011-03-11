@@ -1,1 +1,1 @@
-<h2><fmt:message key="oops"/></h2>
+<h2>Oops - something went wrong</h2>

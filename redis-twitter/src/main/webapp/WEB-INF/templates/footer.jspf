@@ -4,8 +4,8 @@
 	  <div class="footer">
 	    <hr/>
 	    <p align="center">
-	  	<span><a href="/">Home</a></span> | <span>Language (<a href="?lang=en">EN</a> | <a href="?lang=ro">RO</a>)</span>
-	    <img align="right" src="<spring:url value="/static/images/springsource-logo.png" htmlEscape="true" />" alt="Sponsored by SpringSource"/>
+	  	<span><a href="<c:url value="/"/>">Home</a></span> | <span>Language (<a href="?lang=en">EN</a> | <a href="?lang=ro">RO</a>)</span>
+	    <img align="right" src="<c:url value="/static/images/springsource-logo.png"/>" alt="Sponsored by SpringSource"/>
 	    </p>
 	    <p align="center">
 	        Retwis-Java is a simple Twitter clone written in Java and Spring Data to show off 

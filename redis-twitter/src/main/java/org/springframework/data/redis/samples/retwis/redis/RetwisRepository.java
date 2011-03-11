@@ -83,10 +83,10 @@ public class RetwisRepository {
 		this.template = template;
 		valueOps = template.opsForValue();
 
-		users = new DefaultRedisList<String>("users", template);
-		timeline = new DefaultRedisList<String>("timeline", template);
-		userIdCounter = new RedisAtomicLong("global:uid", template.getConnectionFactory());
-		postIdGenerator = new LongGenerator(new RedisAtomicLong("global:pid", template.getConnectionFactory()));
+		users = new DefaultRedisList<String>(KeyUtils.users(), template);
+		timeline = new DefaultRedisList<String>(KeyUtils.timeline(), template);
+		userIdCounter = new RedisAtomicLong(KeyUtils.globalUid(), template.getConnectionFactory());
+		postIdGenerator = new LongGenerator(new RedisAtomicLong(KeyUtils.globalPid(), template.getConnectionFactory()));
 	}
 
 	public String addUser(String name, String password) {
@@ -94,10 +94,10 @@ public class RetwisRepository {
 
 		// save user as hash
 		// uid -> user
-		BoundHashOperations<String, String, String> userOps = template.boundHashOps("uid:" + uid);
+		BoundHashOperations<String, String, String> userOps = template.boundHashOps(KeyUtils.uid(uid));
 		userOps.put("name", name);
 		userOps.put("pass", password);
-		valueOps.set("user:" + name + ":uid", uid);
+		valueOps.set(KeyUtils.user(name), uid);
 
 		users.addFirst(name);
 		return addAuth(name);
@@ -108,27 +108,27 @@ public class RetwisRepository {
 	}
 
 	public List<WebPost> getPosts(String uid, Range range) {
-		return convertPidsToPosts("uid:" + uid + ":posts", range);
+		return convertPidsToPosts(KeyUtils.posts(uid), range);
 	}
 
 	public List<WebPost> getTimeline(String uid, Range range) {
-		return convertPidsToPosts("uid:" + uid + ":timeline", range);
+		return convertPidsToPosts(KeyUtils.timeline(uid), range);
 	}
 
-	public Set<String> getFollowers(String uid) {
-		return covertUidToNames(followers(uid));
+	public Collection<String> getFollowers(String uid) {
+		return covertUidsToNames(KeyUtils.followers(uid));
 	}
 
-	public Set<String> getFollowing(String uid) {
-		return covertUidToNames(following(uid));
+	public Collection<String> getFollowing(String uid) {
+		return covertUidsToNames(KeyUtils.followers(uid));
 	}
 
 	public List<WebPost> getMentions(String uid, Range range) {
-		return convertPidsToPosts("uid:" + uid + ":mentions", range);
+		return convertPidsToPosts(KeyUtils.mentions(uid), range);
 	}
 
 	public Collection<WebPost> timeline(Range range) {
-		return convertPidsToPosts("timeline", range);
+		return convertPidsToPosts(KeyUtils.timeline(), range);
 	}
 
 	public Collection<String> newUsers(Range range) {
@@ -180,15 +180,15 @@ public class RetwisRepository {
 	}
 
 	public String findUid(String name) {
-		return valueOps.get("user:" + name + ":uid");
+		return valueOps.get(KeyUtils.user(name));
 	}
 
 	public boolean isUserValid(String name) {
-		return template.hasKey("user:" + name + ":uid");
+		return template.hasKey(KeyUtils.user(name));
 	}
 
 	public boolean isPostValid(String pid) {
-		return template.hasKey("pid:" + pid);
+		return template.hasKey(KeyUtils.post(pid));
 	}
 
 
@@ -196,7 +196,7 @@ public class RetwisRepository {
 		if (!StringUtils.hasText(uid)) {
 			return "";
 		}
-		BoundHashOperations<String, String, String> userOps = template.boundHashOps("uid:" + uid);
+		BoundHashOperations<String, String, String> userOps = template.boundHashOps(KeyUtils.uid(uid));
 		return userOps.get("name");
 	}
 
@@ -204,7 +204,7 @@ public class RetwisRepository {
 		// find uid
 		String uid = findUid(user);
 		if (StringUtils.hasText(uid)) {
-			BoundHashOperations<String, String, String> userOps = template.boundHashOps("uid:" + uid);
+			BoundHashOperations<String, String, String> userOps = template.boundHashOps(KeyUtils.uid(uid));
 			return userOps.get("pass").equals(pass);
 		}
 
@@ -212,7 +212,7 @@ public class RetwisRepository {
 	}
 
 	public String findNameForAuth(String value) {
-		String uid = valueOps.get("auth:" + value);
+		String uid = valueOps.get(KeyUtils.authKey(value));
 		return findName(uid);
 	}
 
@@ -220,18 +220,18 @@ public class RetwisRepository {
 		String uid = findUid(name);
 		// add random auth key relation
 		String auth = UUID.randomUUID().toString();
-		valueOps.set("uid:" + uid + ":auth", auth);
-		valueOps.set("auth:" + auth, uid);
+		valueOps.set(KeyUtils.auth(uid), auth);
+		valueOps.set(KeyUtils.authKey(auth), uid);
 		return auth;
 	}
 
 	public void deleteAuth(String user) {
 		String uid = findUid(user);
 
-		String authKey = "uid:" + uid + ":auth";
+		String authKey = KeyUtils.auth(uid);
 		String auth = valueOps.get(authKey);
 
-		template.delete(Arrays.asList(authKey, "auth:" + auth));
+		template.delete(Arrays.asList(authKey, KeyUtils.authKey(auth)));
 	}
 
 	public boolean isFollowing(String uid, String targetUid) {
@@ -263,27 +263,27 @@ public class RetwisRepository {
 	// collections mapping the core data structures
 
 	private RedisList<String> timeline(String uid) {
-		return new DefaultRedisList<String>("uid:" + uid + ":timeline", template);
+		return new DefaultRedisList<String>(KeyUtils.timeline(uid), template);
 	}
 
 	private RedisSet<String> following(String uid) {
-		return new DefaultRedisSet<String>("uid:" + uid + ":following", template);
+		return new DefaultRedisSet<String>(KeyUtils.following(uid), template);
 	}
 
 	private RedisSet<String> followers(String uid) {
-		return new DefaultRedisSet<String>("uid:" + uid + ":followers", template);
+		return new DefaultRedisSet<String>(KeyUtils.followers(uid), template);
 	}
 
 	private RedisList<String> mentions(String uid) {
-		return new DefaultRedisList<String>("uid:" + uid + ":mentions", template);
+		return new DefaultRedisList<String>(KeyUtils.mentions(uid), template);
 	}
 
 	private RedisMap<String, String> post(String pid) {
-		return new DefaultRedisMap<String, String>("pid:" + pid, template);
+		return new DefaultRedisMap<String, String>(KeyUtils.post(pid), template);
 	}
 
 	private RedisList<String> posts(String uid) {
-		return new DefaultRedisList<String>("uid:" + uid + ":posts", template);
+		return new DefaultRedisList<String>(KeyUtils.posts(uid), template);
 	}
 
 	// various util methods
@@ -304,6 +304,10 @@ public class RetwisRepository {
 		return content;
 	}
 
+	private List<String> covertUidsToNames(String key) {
+		return template.sort(SortQueryBuilder.sort(key).noSort().get("user:*->name").build());
+	}
+
 	private Set<String> covertUidToNames(Set<String> uids) {
 		Set<String> set = new LinkedHashSet<String>(uids.size());
 
@@ -321,18 +325,19 @@ public class RetwisRepository {
 		final String replyPid = "replyPid";
 		final String replyUid = "replyUid";
 
-		SortQuery<String> query = SortQueryBuilder.sort(key).noSort().
-				get(pidKey).get(pid + uid).get(pid + content).get(pid+replyPid).get(pid+replyUid).
-				limit(range.being, range.end).build();
+		SortQuery<String> query = SortQueryBuilder.sort(key).noSort().get(pidKey).get(pid + uid).get(pid + content).get(
+				pid + replyPid).get(pid + replyUid).limit(range.being, range.end).build();
 		BulkMapper<WebPost, String> hm = new BulkMapper<WebPost, String>() {
 			@Override
-			public WebPost mapBulk(Iterator<String> bulk) {
+			public WebPost mapBulk(List<String> bulk) {
 				Map<String, String> map = new LinkedHashMap<String, String>();
-				String pid = bulk.next();
-				map.put(uid, bulk.next());
-				map.put(content, bulk.next());
-				map.put(replyPid, bulk.next());
-				map.put(replyUid, bulk.next());
+				Iterator<String> iterator = bulk.iterator();
+
+				String pid = iterator.next();
+				map.put(uid, iterator.next());
+				map.put(content, iterator.next());
+				map.put(replyPid, iterator.next());
+				map.put(replyUid, iterator.next());
 
 				return convertPost(pid, map);
 			}
