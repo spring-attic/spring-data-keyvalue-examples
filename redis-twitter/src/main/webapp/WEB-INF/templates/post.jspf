@@ -6,7 +6,7 @@
 		      	<a href="<c:url value="/status?pid=${p.pid}"/>"><fmt:message key="${p.time}"><fmt:param value="${p.timeArg}"/></fmt:message></a>
 			    <!-- reply connection -->
 			    <c:if test="${!empty p.replyPid}">
-			       <a href="<c:url value="/status?pid=${p.replyPid}"/>"><fmt:message key="inreplyto"/>${p.replyTo}</a>
+			       <a href="<c:url value="/status?pid=${p.replyPid}"/>"><fmt:message key="inreplyto"/> ${p.replyTo}</a>
 			    </c:if>
 			    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			    <c:if test="${loggedIn}">
