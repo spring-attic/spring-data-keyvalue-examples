@@ -50,11 +50,11 @@ public class RetwisController {
 	}
 
 	@RequestMapping("/")
-	public String root(Model model) {
+	public String root(@RequestParam(required = false) Integer page, Model model) {
 		if (RetwisSecurity.isSignedIn()) {
 			return "redirect:/!" + RetwisSecurity.getName();
 		}
-		return timeline(null, model);
+		return timeline(page, model);
 	}
 
 	@RequestMapping("/signUp")
