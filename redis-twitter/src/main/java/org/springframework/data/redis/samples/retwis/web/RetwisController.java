@@ -54,7 +54,7 @@ public class RetwisController {
 		if (RetwisSecurity.isSignedIn()) {
 			return "redirect:/!" + RetwisSecurity.getName();
 		}
-		return timeline(model);
+		return timeline(null, model);
 	}
 
 	@RequestMapping("/signUp")
@@ -100,9 +100,8 @@ public class RetwisController {
 	}
 
 	@RequestMapping(value = "/!{name}", method = RequestMethod.GET)
-	public String posts(@PathVariable String name, @RequestParam(required = false) String replyto, @RequestParam(required = false) String replypid, Model model) {
+	public String posts(@PathVariable String name, @RequestParam(required = false) String replyto, @RequestParam(required = false) String replypid, @RequestParam(required = false) Integer page, Model model) {
 		checkUser(name);
-
 		String targetUid = twitter.findUid(name);
 		model.addAttribute("post", new Post());
 		model.addAttribute("name", name);
@@ -119,10 +118,14 @@ public class RetwisController {
 				model.addAttribute("follows", twitter.isFollowing(RetwisSecurity.getUid(), targetUid));
 			}
 		}
-
-		model.addAttribute("posts", (RetwisSecurity.isUserSignedIn(targetUid) ? twitter.getTimeline(targetUid,
-				new Range())
-				: twitter.getPosts(targetUid, new Range())));
+		// sanitize page attribute
+		page = (page != null ? Math.abs(page) : 1);
+		model.addAttribute("page", page + 1);
+		Range range = new Range(page);
+		model.addAttribute("moreposts", (RetwisSecurity.isUserSignedIn(targetUid) ? twitter.hasMoreTimeline(targetUid,
+				range) : twitter.hasMorePosts(targetUid, range)));
+		model.addAttribute("posts", (RetwisSecurity.isUserSignedIn(targetUid) ? twitter.getTimeline(targetUid, range)
+				: twitter.getPosts(targetUid, range)));
 
 		return "home";
 	}
@@ -162,8 +165,13 @@ public class RetwisController {
 	}
 
 	@RequestMapping("/timeline")
-	public String timeline(Model model) {
-		model.addAttribute("posts", twitter.timeline(new Range()));
+	public String timeline(@RequestParam(required = false) Integer page, Model model) {
+		// sanitize page attribute
+		page = (page != null ? Math.abs(page) : 1);
+		model.addAttribute("page", page + 1);
+		Range range = new Range(page);
+		model.addAttribute("moreposts", twitter.hasMoreTimeline(range));
+		model.addAttribute("posts", twitter.timeline(range));
 		model.addAttribute("users", twitter.newUsers(new Range()));
 		return "timeline";
 	}

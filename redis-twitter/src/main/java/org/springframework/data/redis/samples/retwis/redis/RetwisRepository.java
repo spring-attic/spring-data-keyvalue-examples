@@ -235,6 +235,19 @@ public class RetwisRepository {
 		template.delete(Arrays.asList(authKey, KeyUtils.authKey(auth)));
 	}
 
+	public boolean hasMorePosts(String targetUid, Range range) {
+		return posts(targetUid).size() > range.end + 1;
+	}
+
+	public boolean hasMoreTimeline(String targetUid, Range range) {
+		return timeline(targetUid).size() > range.end + 1;
+	}
+
+
+	public boolean hasMoreTimeline(Range range) {
+		return timeline.size() > range.end + 1;
+	}
+
 	public boolean isFollowing(String uid, String targetUid) {
 		return following(uid).contains(targetUid);
 	}
@@ -259,7 +272,7 @@ public class RetwisRepository {
 
 		String key = tempSet.getKey();
 		template.expire(key, 5, TimeUnit.SECONDS);
-		
+
 		return covertUidsToNames(key);
 	}
 

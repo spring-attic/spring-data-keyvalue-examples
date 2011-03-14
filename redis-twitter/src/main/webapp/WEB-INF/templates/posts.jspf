@@ -14,4 +14,9 @@
 	   <%@ include file="/WEB-INF/templates/post.jspf" %>
 	   </c:otherwise>
    </c:choose>
+   <c:if test="${moreposts}">
+	   <div class="span-2 box" align="center">
+		   <a href="?page=${page}"><fmt:message key="more"/></a>
+	   </div>
+   </c:if>
 </div>
