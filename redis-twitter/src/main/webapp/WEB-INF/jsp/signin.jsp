@@ -1,7 +1,7 @@
 <h2 ><fmt:message key="welcome"/></h2>
 
 <div class="span-11 box">
-  <h2>Sign In</h2>
+  <h2><fmt:message key="signin"/></h2>
   
   <form action="signIn" method="post">
      <c:if test="${errorpass}">
@@ -12,21 +12,21 @@
   
     <table>
       <tr>
-        <td>username</td>
+        <td><fmt:message key="username"/></td>
        <td><input  name="name" /></td>
       </tr>
       <tr>
-        <td>password</td>
+        <td><fmt:message key="password"/></td>
         <td><input type="password" name="pass" /></td>
       </tr>
     </table>
-    <input type="submit" value="Sign In" />
+    <input type="submit" value="<fmt:message key="signin"/>" />
 
   </form>
 </div>  
 
 <div class="span-11 box last">
-  <h2>Sign Up</h2>
+  <h2><fmt:message key="signup"/></h2>
 
    <c:if test="${errorduplicateuser}">
 	   <div class="error">
@@ -43,19 +43,19 @@
   <form action="signUp" method="post">
     <table>
       <tr>
-        <td>username</td>
+        <td><fmt:message key="username"/></td>
         <td><input  name="name" /></td>
       </tr>
       <tr>
-        <td>password</td>
+        <td><fmt:message key="password"/></td>
         <td><input  type="password" name="pass" /></td>
       </tr>
       <tr>
-        <td>password again</td>
+        <td><fmt:message key="password.again"/></td>
         <td><input  type="password" name="pass2" /></td>
       </tr>
     </table>
-    <input type="submit" value="Sign Up">
+    <input type="submit" value="<fmt:message key="signup"/>">
   </form>
 </div>
 

@@ -196,9 +196,9 @@ public class RetwisController {
 	}
 
 	@ExceptionHandler(NoSuchDataException.class)
-	public String handleNoUserException(NoSuchDataException ex, Model model) {
-		model.addAttribute("data", ex.getData());
-		model.addAttribute("nodatatype", ex.isPost() ? "nodata.post" : "nodata.user");
+	public String handleNoUserException(NoSuchDataException ex) {
+		//		model.addAttribute("data", ex.getData());
+		//		model.addAttribute("nodatatype", ex.isPost() ? "nodata.post" : "nodata.user");
 		return "nodata";
 	}
 }

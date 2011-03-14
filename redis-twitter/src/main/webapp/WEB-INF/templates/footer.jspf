@@ -4,7 +4,7 @@
 	  <div class="footer">
 	    <hr/>
 	    <p align="center">
-	  	<span><a href="<c:url value="/"/>">Home</a></span> | <span>Language (<a href="?lang=en">EN</a> | <a href="?lang=ro">RO</a>)</span>
+	  	<span><a href="<c:url value="/"/>"><fmt:message key="home"/></a></span> | <span><fmt:message key="lang"/> (<a href="?lang=en">EN</a> | <a href="?lang=ro">RO</a>)</span>
 	    <img align="right" src="<c:url value="/static/images/springsource-logo.png"/>" alt="Sponsored by SpringSource"/>
 	    </p>
 	    <p align="center">

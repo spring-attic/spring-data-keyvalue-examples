@@ -3,11 +3,11 @@
 </div>
 <c:if test="${!loggedIn}">
  <div class="span-7 last" id="rightcol">
-  <a href="signIn">Sign In</a>
+  <a href="signIn"><fmt:message key="signin"/></a>
   </div>
 </c:if>
 <c:if test="${!loggedIn}">
  <div class="span-7" id="rightcol">
-  <a href="timeline">Timeline</a>
+  <a href="timeline"><fmt:message key="timeline"/></a>
   </div>
 </c:if>

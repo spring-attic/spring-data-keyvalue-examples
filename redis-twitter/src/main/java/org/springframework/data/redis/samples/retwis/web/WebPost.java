@@ -28,6 +28,28 @@ public class WebPost {
 	private String name;
 	private String replyTo;
 	private String replyPid;
+	private String pid;
+	private String time;
+	private String timeArg;
+
+	public WebPost() {
+	}
+
+	public WebPost(Post post) {
+
+		String tempTime = WebUtils.timeInWords(Long.valueOf(post.getTime()));
+		int lastIndexOf = tempTime.lastIndexOf("#");
+		if (lastIndexOf > 0) {
+			this.time = tempTime.substring(0, lastIndexOf);
+			this.timeArg = tempTime.substring(lastIndexOf + 1);
+		}
+		else {
+			this.time = tempTime;
+			this.timeArg = "";
+		}
+		this.replyPid = post.getReplyPid();
+		this.content = post.getContent();
+	}
 
 	/**
 	 * Returns the replyPid.
@@ -43,18 +65,6 @@ public class WebPost {
 	 */
 	public void setReplyPid(String replyPid) {
 		this.replyPid = replyPid;
-	}
-
-	private String pid;
-	private String time;
-
-	public WebPost() {
-	}
-
-	public WebPost(Post post) {
-		this.time = WebUtils.timeInWords(Long.valueOf(post.getTime()));
-		this.replyPid = post.getReplyPid();
-		this.content = post.getContent();
 	}
 
 	/**
@@ -123,11 +133,12 @@ public class WebPost {
 		return time;
 	}
 
-	/**
-	 * @param time The time to set.
-	 */
 	public void setTime(String time) {
 		this.time = time;
+	}
+
+	public String getTimeArg() {
+		return timeArg;
 	}
 
 	/**

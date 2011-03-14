@@ -7,16 +7,16 @@
 	<form method="post" action="!${name}">
 	  <c:choose>
 	  	<c:when test="${!empty replyTo}">
-	  	Reply to <i>${replyTo}</i>:
+	  	<fmt:message key="reply"/> <i>${replyTo}</i>:
 	  	</c:when>
 	  	<c:otherwise>
-	  	<b><i>${name}</i></b>, what's happening?
+	  	<b><i>${name}</i></b>, <fmt:message key="wazza"/>
 	  	</c:otherwise>
 	  </c:choose>
       <textarea name="content" rows="3" cols="60"><c:if test="${!empty replyTo}">@${replyTo} </c:if></textarea><br />
       <input type="hidden" name="replyTo" value="${replyTo}"/>
       <input type="hidden" name="replyPid" value="${replyPid}"/>
-      <input type="submit" value="Update"/>
+      <input type="submit" value="<fmt:message key="update"/>"/>
 	</form>
   </div>
   </c:when>
@@ -28,7 +28,7 @@
 </c:choose>
 
 <c:if test="${!loggedIn}">
-  <a href="timeline">Timeline</a>
+  <a href="timeline"><fmt:message key="timeline"/></a>
 </c:if>
 </div>
 

@@ -30,52 +30,51 @@ public class WebUtils {
 		elapsed /= 1000;
 
 		if (elapsed < 10) {
-			return "just now";
+			return "time.now";
 		}
 		if (elapsed < 60) {
-			return "less than a minute ago";
+			return "time.minute.less";
 		}
 
 		// minutes
 		elapsed /= 60;
 
 		if (elapsed < 2) {
-			return "a minute ago";
+			return "time.minute";
 		}
 
 		if (elapsed < 45) {
-			return elapsed + " minutes ago";
+			return "time.minutes#" + elapsed;
 		}
 
 		if (elapsed < 90) {
-			return "about an hour ago";
+			return "time.hour";
 		}
 
 		if (elapsed < 1440) {
-			return elapsed / 60 + " hours ago";
+			return "time.hours#" + elapsed / 60;
 		}
 
 		if (elapsed < 2880) {
-			return "about a day ago";
+			return "time.day";
 		}
 
 		if (elapsed < 43200) {
-			return (elapsed / 1440) + " days ago";
+			return "time.days#" + (elapsed / 1440);
 		}
 
 		if (elapsed < 86400) {
-			return "about a month ago";
+			return "time.month";
 		}
 
 		if (elapsed < 525600) {
-			return (elapsed / 43200) + " months ago";
+			return "time.months" + (elapsed / 43200);
 		}
 
 		if (elapsed < 1051199) {
-			return "about a year ago";
+			return "time.year";
 		}
 
-		return "over " + (elapsed / 525600) + " years ago";
+		return "time.years#" + (elapsed / 525600);
 	}
-
 }

@@ -3,14 +3,14 @@
 		      <a href="!${p.name}"><b>${p.name}</b></a> ${p.content}
 		      <div class="date">
 		        <!-- link to post -->
-		      	<a href="<c:url value="/status?pid=${p.pid}"/>">${p.time}</a>
+		      	<a href="<c:url value="/status?pid=${p.pid}"/>"><fmt:message key="${p.time}"><fmt:param value="${p.timeArg}"/></fmt:message></a>
 			    <!-- reply connection -->
 			    <c:if test="${!empty p.replyPid}">
-			       <a href="<c:url value="/status?pid=${p.replyPid}"/>">in reply to ${p.replyTo}</a>
+			       <a href="<c:url value="/status?pid=${p.replyPid}"/>"><fmt:message key="inreplyto"/>${p.replyTo}</a>
 			    </c:if>
 			    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			    <c:if test="${loggedIn}">
-			      <a href="<c:url value="/!${loggedUser}?replyto=${p.name}&replypid=${p.pid}"/>">Reply</a>
+			      <a href="<c:url value="/!${loggedUser}?replyto=${p.name}&replypid=${p.pid}"/>"><fmt:message key="reply"/></a>
 			    </c:if>
 		      </div>
 		   </div>
