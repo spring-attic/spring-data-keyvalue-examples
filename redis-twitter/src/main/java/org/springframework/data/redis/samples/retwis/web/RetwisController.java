@@ -161,6 +161,12 @@ public class RetwisController {
 		model.addAttribute("followers", retwis.getFollowers(targetUid));
 		model.addAttribute("following", retwis.getFollowing(targetUid));
 
+		if (RetwisSecurity.isSignedIn() && !targetUid.equals(RetwisSecurity.getUid())) {
+			model.addAttribute("also_followed", retwis.alsoFollowed(RetwisSecurity.getUid(), targetUid));
+			model.addAttribute("common_followers", retwis.commonFollowers(RetwisSecurity.getUid(), targetUid));
+			model.addAttribute("follows", retwis.isFollowing(RetwisSecurity.getUid(), targetUid));
+		}
+
 		return "mentions";
 	}
 
