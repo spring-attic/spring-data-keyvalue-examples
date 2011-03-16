@@ -22,17 +22,14 @@
   </div>
   </c:when>
   <c:otherwise>
-  	<c:if test="${loggedIn}">
-  	  <%@ include file="/WEB-INF/templates/userFollow.jspf" %>
-  	</c:if>
+	  	<c:if test="${loggedIn}">
+	  	  <%@ include file="/WEB-INF/templates/userFollow.jspf" %>
+	  	</c:if>
   </c:otherwise>
 </c:choose>
 </div>
-<c:if test="${!loggedIn}">
-  <a href="timeline"><fmt:message key="timeline"/></a>
-</c:if>
 
-
-<%@ include file="/WEB-INF/templates/network.jspf" %>
 <%@ include file="/WEB-INF/templates/posts.jspf" %>
+<%@ include file="/WEB-INF/templates/network.jspf" %>
+
 
