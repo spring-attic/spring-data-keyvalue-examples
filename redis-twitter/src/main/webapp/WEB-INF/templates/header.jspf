@@ -25,7 +25,7 @@
       <div class="container">
       	  <div class="header">
       	  	  <div class="span-15 prepend-1">
-      	  	     <h3 class="alt"><a href="<c:url value="/"/>"">Retwis-J</a></h3>
+      	  	     <h2 class="alt"><a href="<c:url value="/"/>"">Retwis-J</a></h2>
       	  	  </div>
 			  <div class="span-8 last right-align">
 			    <% 
@@ -38,6 +38,11 @@
 			    	<a href="<c:url value="/logout"/>"><fmt:message key="logout"/></a> |
 			    	<a href="<c:url value="/timeline"/>"><fmt:message key="timeline"/></a>
 			    </c:if>
+				<c:if test="${!loggedIn}">
+<!--  				 <div class="span-7 last" id="rightcol"> -->
+				  <a href="signIn"><fmt:message key="signin"/></a>
+				  <!-- </div> -->
+				</c:if>
 			  </div>
 			  <hr/>
 		  </div>

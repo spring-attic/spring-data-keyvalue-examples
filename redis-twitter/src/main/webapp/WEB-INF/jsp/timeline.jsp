@@ -1,15 +1,13 @@
-<div class="span-16" id="maincol">
-<h2><fmt:message key="timeline"/></h2>
-<fmt:message key="all.posts"/>
-<br/>
-<%@ include file="/WEB-INF/templates/posts.jspf" %>
+<div class="span-24 prepend-1 last">
+  <h2 class="alt"><fmt:message key="timeline"/></h2>
 </div>
+<div class="span-15 prepend-1">
+  <fmt:message key="all.posts"/>
+</div>
+<br/>
 
-<c:if test="${!loggedIn}">
- <div class="span-7 last" id="rightcol">
-  <a href="signIn"><fmt:message key="signin"/></a>
-  </div>
-</c:if>
+<%@ include file="/WEB-INF/templates/posts.jspf" %>
+
 
 <div class="span-7 last" id="rightcol">
   <div class="span-7 box">

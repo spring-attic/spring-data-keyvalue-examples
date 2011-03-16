@@ -3,7 +3,7 @@
     	<c:when test="${empty posts}">
     	   <c:choose>
     	   	 <c:when test="${loggedIn}">
-    	   	 	<i><fmt:message key="nopost.note"/><a href="!${loggedUser}?replyto=costinl">@costinl</a> ?</i>
+    	   	 	<i><fmt:message key="nopost.note"/><a href="<c:url value="/!${loggedUser}?replyto=costinl"/>">@costinl</a> ?</i>
     	   	 </c:when>
     	   	 <c:otherwise>
     	   	 	<i><fmt:message key="nopost"/></i>
