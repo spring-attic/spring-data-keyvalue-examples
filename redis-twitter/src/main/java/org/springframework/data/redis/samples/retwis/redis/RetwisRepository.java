@@ -375,8 +375,6 @@ public class RetwisRepository {
 		return sort;
 	}
 
-	// FIXME: eliminate this n+1 calls
-	// potentially do another sort query to find all the names in one go
 	private WebPost convertPost(String pid, Map hash) {
 		Post post = postMapper.fromHash(hash);
 		WebPost wPost = new WebPost(post);
