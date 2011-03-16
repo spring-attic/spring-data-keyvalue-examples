@@ -1,74 +1,30 @@
-
 a {
-  text-decoration: none;
-  color: #0f1;
-}
-
-a:visited {
-  color: green;
-}
-
-.right-align {
-  text-align: right;
+  color: #D02B55;
 }
 
 body {
-  font-size: 100%;
+  color: #555;
 }
 
-.footer {
-  font-size: 85%;
-}
-
-.container {
-}
-
-
-#updateform {
-  background: #0c0;
-  margin: 5px;
-}
-
-.rightcolumn {
- 
+div.post p {
+    margin: 2px; 
 }
 
 .box {
-  padding: 7px;
-  margin: 5px;
-  -moz-border-radius-bottomleft:5px;
+  padding: 10px;
+  background: rgba(208,43,85,0.15);
+  -moz-border-radius-bottomleft:5px;scr
   -moz-border-radius-bottomright:5px;
   -moz-border-radius-topleft:5px;
   -moz-border-radius-topright:5px;
-  background: #0c0;
 }
 
 textarea {
   height: 5em;
   width: 500px;
 }
-#posts {
-  margin: 5px;
-  padding: 5px;
+
+.footer {
+  text-align: center;
 }
 
-#posts .date {
-  font-size: 75%;
-  color: #909;
-}
-
-#posts hr {
-  margin: 0;
-}
-
-#posts .post {
-  border-top: 1px dashed #0c0;
-  padding-top: 5px;
-  padding-bottom: 5px;
-}
-
-.user-list li {
-  list-style: none;
-}
-
-tbody tr:nth-child(even) td, tbody tr.even td {background:#0c0;}

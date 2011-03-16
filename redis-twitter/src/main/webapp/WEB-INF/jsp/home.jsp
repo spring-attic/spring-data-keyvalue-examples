@@ -1,13 +1,14 @@
-<h3><c:if test="${loggedUser eq name}"><fmt:message key="welcome"/> </c:if>${name}</h3>
-
-<div class="span-15">
+<div class="span-24 prepend-1 last">
+ <h3 class="alt"><c:if test="${loggedUser eq name}"><fmt:message key="welcome"/> </c:if>${name}</h3>
+</div>
+<div class="span-15 prepend-1">
  <c:choose>
   <c:when test="${loggedUser eq name}">
   <div id="updateform" class="box">
 	<form method="post" action="!${name}">
 	  <c:choose>
 	  	<c:when test="${!empty replyTo}">
-	  	<fmt:message key="reply"/> <i>${replyTo}</i>:
+	  	<fmt:message key="replyto"/> <i>${replyTo}</i>:
 	  	</c:when>
 	  	<c:otherwise>
 	  	<b><i>${name}</i></b>, <fmt:message key="wazza"/>
@@ -26,11 +27,11 @@
   	</c:if>
   </c:otherwise>
 </c:choose>
-
+</div>
 <c:if test="${!loggedIn}">
   <a href="timeline"><fmt:message key="timeline"/></a>
 </c:if>
-</div>
+
 
 <%@ include file="/WEB-INF/templates/network.jspf" %>
 <%@ include file="/WEB-INF/templates/posts.jspf" %>

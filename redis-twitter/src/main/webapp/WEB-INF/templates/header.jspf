@@ -22,12 +22,12 @@
 	</head>
 
     <body>
-      <div id="container">
-      	  <div class="header" class="span-24">
-      	  	  <div class="span-6">
-      	  	     <h3><a href="<c:url value="/"/>"">Retwis-J</a></h3>
+      <div class="container">
+      	  <div class="header">
+      	  	  <div class="span-15 prepend-1">
+      	  	     <h3 class="alt"><a href="<c:url value="/"/>"">Retwis-J</a></h3>
       	  	  </div>
-			  <div class="span-17 last right-align">
+			  <div class="span-8 last right-align">
 			    <% 
 			    	pageContext.setAttribute("loggedIn", RetwisSecurity.isSignedIn(), PageContext.PAGE_SCOPE);
 			    	pageContext.setAttribute("loggedUser", RetwisSecurity.getName(), PageContext.PAGE_SCOPE); 
@@ -41,5 +41,5 @@
 			  </div>
 			  <hr/>
 		  </div>
-		  <div class="span-24">
+		  <div>
     

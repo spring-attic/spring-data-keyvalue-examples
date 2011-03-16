@@ -1,4 +1,4 @@
-<div id="posts" class="span-15">
+<div id="posts" class="span-15 prepend-1 append-bottom">
    <c:choose>
     	<c:when test="${empty posts}">
     	   <c:choose>
