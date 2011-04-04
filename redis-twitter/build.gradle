@@ -73,12 +73,11 @@ task wrapper(type: Wrapper) {
 
 	
 
-task docs {
     apply plugin: 'docbook'
     
     docbookHtmlSingle.stylesheet = new File(projectDir, 'docs/src/reference/resources/xsl/html-single-custom.xsl')
-    defaultTasks 'docbookHtml', 'docbookHtmlSingle', 'docbookFoPdf'
     [docbookHtml, docbookFoPdf, docbookHtmlSingle]*.sourceFileName = 'index.xml'
+    [docbookHtml, docbookFoPdf, docbookHtmlSingle]*.sourceDirectory = new File(projectDir, 'docs/src/reference/docbook')
 
     docbookHtml.stylesheet = new File(projectDir, 'docs/src/reference/resources/xsl/html-custom.xsl')
     docbookHtmlSingle.stylesheet = new File(projectDir, 'docs/src/reference/resources/xsl/html-single-custom.xsl')
@@ -96,4 +95,3 @@ task docs {
 //            from (imagesDir)
 //        }
 //    }
-}
