@@ -3,25 +3,85 @@
   <title>Retwis Tutorial</title>
   
   <para>The Spring Data Key-Value RetwisJ sample project show-cases a simple, Twitter-like clone built on top of Redis using Spring Data Key Value.
-  It is inspired by the original Redis example, <ulink url="http://redis.io/topics/twitter-clone">Retwis</ulink>. For more information on Retwis please
-  refer to the aforementioned link.
+  It is inspired by the original Redis example, <ulink url="http://redis.io/topics/twitter-clone">Retwis</ulink>. In short, it demos a simple, social-like messaging service
+  based entirely on Redis.
 	</para>
 
   
   <section id="retwisj:requirements">
     <title>Requirements</title>
+    
+    <para>To succesfully build and run RetwisJ, one needs:</para>
+    <itemizedlist>
+      <listitem>JDK 6.0</listitem>
+      <listitem>Redis 2.2.x (Redis 2.0.x should workd as well)</listitem>
+      <listitem>Spring Data Key Value 1.0 M3</listitem>
+      <listitem>A servlet 2.4 container (such as Tomcat 6) </listitem>
+    </itemizedlist>
+    
+    <para>The version numbers above have been used to develop and test the demo. Other versions (especially higher ones) may or may not work.</para>
+    
+    <para>It is assumed that users of this tutorial have a basic knowledge of object-oriented design, Java, Spring, JSP, Java web applications and 
+    <ulink url="http://redis.io/documentation">Redis</ulink> in particular.</para>
   </section>
 
   <section id="retwisj:setup">
     <title>Setup</title>
+    
+    <para>RetwisJ uses <ulink url="http://gradle.org/">Gradle</ulink> as its build system. To build the artifact, simply type at the command line:</para>
+    <programlisting>gradlew war</programlisting>
+    <para>which will create a WAR ready to be deployed into a container.</para>
+    
+    <note>If Gradle is installed, one can use <literal>gradle</literal> instead of <literal>gradlew</literal> in the command above.</note>
+    
+    <para>Once the WAR is created, deploy it into your container of choice. Goes without saying that before accessing the application, Redis should be started.</para>
   </section>
 
   <section id="retwisj:structure">
-    <title>Redis Structure</title>
+    <title>Redis Data Layout</title>
+    
+    <para>For a detailed introduction to Redis and how it can be used as a datastore for Twitter, take a look at the original Retwis 
+    <ulink url="http://redis.io/topics/twitter-clone">documentation</ulink>. This document will describe the RetwisJ data structure without going into details of the
+    various Redis features.</para>
+    
+    <para>To better understand the data layout, it helps to identify the main "domain" objects inside RetwisJ. In its current form, RetwisJ allows <empahsis>users</empahsis> to be 
+    created, to post <emphasis>messages</emphasis>, to <emphasis>follow</emphasis> and be <emphasis>followed</emphasis> by other users. Each user automatically sees the <emphasis>posts</emphasis> of the
+    ones she follows but also see other users posts from the <emphasis>timeline</emphasis>. Each italic word represents a "domain" object and its relationship to other objects that need to be represented
+     in Redis.</para>
+    
+    <para>With a "traditional" database, one would use tables and indexes and so on however Redis is not a RDBS rather, it is a key-value store. That is, it allows simple values (called strings
+    in Redis terminology), lists, sets and sorted or z-sets to be stored under a unique key. So rather the storing data in a certain table at a certain id, we can store data directly under a key
+    (using a key pattern of choice for easy retrieval) and take advantage of the various Redis key types. Again, for more details, see the "Data Layout" section in Retwis 
+    <ulink url="http://redis.io/topics/twitter-clone">docs</ulink>.</para>
+    
+    <para>The user data (name and password) is stored in a hash (or a map). To generate the key for each new user, a dedicated counter is used (called <literal>global:uid</literal>); thanks to Redis atomic operations,
+    the key can be simply incremented to generate a new user id (uid). We can now store the user data under the key <literal>uid:[global:uid]</literal> where <literal>[global:uid]</literal> represents
+    the value of the <literal>global:uid</literal> key. For example, with two users "john" and "mike", Redis will contain the following keys:</para>
+    
+    <programlisting>
+    key: global:uid  value: 2
+    key: uid:1       value: {name: john, pass: secret}
+    key: uid:2       value: {name: mike, pass: ekim}
+    </programlisting>
+    
+    The uid is used internally to store and lookup all user information but we need to store also the relationship between the username and its internal uid - so for example, when a user logs on we can 
+    find the uid for the user name. A simple way to do that is to create a <emphasis>lookup</emphasis> or reverse key that relies on the username as the key and the uid as the value, such as 
+    <literal>user:[name]:uid</literal>. Following our example above, the layout becomes:
+
+    <programlisting>
+    key: global:uid  value: 2
+    key: uid:1       value: {name: john, pass: secret}
+    key: uid:2       value: {name: mike, pass: ekim}
+    user:john:uid    value: 1
+    user:mike:uid    value: 2
+    </programlisting>
+    
   </section>
 
   <section id="retwisj:design">
     <title>Application Design</title>
+    
+    <para></para>
   </section>
     
 </chapter>
