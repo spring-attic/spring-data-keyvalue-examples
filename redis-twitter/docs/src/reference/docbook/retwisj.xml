@@ -335,6 +335,19 @@
               <entry>{1}</entry>
               <entry>Users followed by user 2 (costinl)</entry>
             </row>          
+            <row>
+              <entry><literal>uid:2:auth</literal></entry>
+              <entry>string</entry>
+              <entry>{3b7b0677...}</entry>
+              <entry>uid -> auth key. Random string used for authenticating user 2 (costinl)</entry>
+            </row>          
+            <row>
+              <entry><literal>auth:3b7b0677...</literal></entry>
+              <entry>string</entry>
+              <entry>{2}</entry>
+              <entry>auth key -> uid</entry>
+            </row>          
+
             <row rowsep="0">
               <entry spanname="all"><emphasis><![CDATA[Post-related keys]]></emphasis></entry>
             </row>
