@@ -1,1 +1,0 @@
-<h2><fmt:message key="nodata"/> <fmt:message key="${nodatatype}"/>: ${name}</h2>
