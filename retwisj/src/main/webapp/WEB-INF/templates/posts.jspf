@@ -1,0 +1,22 @@
+<div id="posts" class="span-15 prepend-1 append-bottom">
+   <c:choose>
+    	<c:when test="${empty posts}">
+    	   <c:choose>
+    	   	 <c:when test="${loggedIn}">
+    	   	 	<i><fmt:message key="nopost.note"/><a href="<c:url value="/!${loggedUser}?replyto=costinl"/>">@costinl</a> ?</i>
+    	   	 </c:when>
+    	   	 <c:otherwise>
+    	   	 	<i><fmt:message key="nopost"/></i>
+    	   	 </c:otherwise>
+    	   </c:choose>
+       </c:when>
+	   <c:otherwise>
+	   <%@ include file="/WEB-INF/templates/post.jspf" %>
+	   </c:otherwise>
+   </c:choose>
+   <c:if test="${moreposts}">
+	   <div class="span-2 box" align="center">
+		   <a href="?page=${page}"><fmt:message key="more"/></a>
+	   </div>
+   </c:if>
+</div>

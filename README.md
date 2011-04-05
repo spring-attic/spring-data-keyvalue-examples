@@ -5,6 +5,10 @@ Examples featuring [Spring Data](http://www.springsource.org/spring-data) Key Va
 The primary goal of the [Spring Data](http://www.springsource.org/spring-data) project is to make it easier to build Spring-powered applications that use new data access technologies such as non-relational databases, map-reduce frameworks, and cloud based data services.
 As the name implies, the **Key Value** modules provides integration with key value stores such as [Redis](http://code.google.com/p/redis/) and [Riak](http://www.basho.com/Riak.html).
 
+Example List
+------------
+RetwisJ - A Java, Spring Data port of [Retwis](http://redis.io/topics/twitter-clone)
+
 Contributing
 ------------
 

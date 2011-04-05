@@ -1,0 +1,14 @@
+<div class="box">
+	<c:choose>
+	  <c:when test="${follows}"><a href="<c:url value="/!${name}/stopfollowing"/>"><fmt:message key="follow.stop"/></a></c:when>
+	  <c:otherwise><a href="<c:url value="/!${name}/follow"/>"><fmt:message key="follow"/></a></c:otherwise>
+	</c:choose>
+	<c:if test="${!no_mentions}"> | <a href="<c:url value="/!${name}/mentions"/>"><fmt:message key="Mentions"/></a></c:if>
+</div>
+
+   <c:if test="${!empty also_followed}">
+    <div class="box">
+  	<fmt:message key="follow.also"/>: <c:forEach var="f" items="${also_followed}"><a href="<c:url value="/!${f}"/>">${f}</a> </c:forEach>
+  	</div>
+   </c:if>
+ 
