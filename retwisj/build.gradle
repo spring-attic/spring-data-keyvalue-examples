@@ -12,7 +12,7 @@ apply plugin: 'war'
 group = 'org.springframework.data'
 
 sourceCompatibility = 1.6
-version = '1.0.BUILD-SNAPSHOT'
+version = '1.0.0.BUILD-SNAPSHOT'
 archivesBaseName = "retwis-java"
 
 buildscript {
