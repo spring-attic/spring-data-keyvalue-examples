@@ -8,10 +8,10 @@ Build
 The project creates a WAR file suitable for deployment in a Servlet 2.5 container (such as Tomcat). It uses [Gradle](http://gradle.org/) as a build system.
 Simply type:
 
-gradlew build
+      gradlew build
 
 or if you have gradle installed on your machine and in your classpath:
 
-gradle build
+      gradle build
 
-Start up an instance of the redis server, deploy your WAR and point your browser to http://<server>:<port>/retwis
+Start up an instance of the redis server, deploy your WAR and point your browser to (for the typical setup) [http://localhost:8080/retwisj](http://localhost:8080/retwisj)
