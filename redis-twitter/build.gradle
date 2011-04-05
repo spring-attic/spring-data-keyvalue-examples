@@ -27,6 +27,7 @@ buildscript {
 
     dependencies {
         classpath 'org.springframework:gradle-stuff:0.1-20110404'
+        classpath 'net.sf.docbook:docbook-xsl:1.75.2:ns-resources@zip'
     }
 }
 
