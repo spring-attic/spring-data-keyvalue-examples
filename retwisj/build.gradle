@@ -72,10 +72,8 @@ task wrapper(type: Wrapper) {
     gradleVersion = '0.9.2'
 }
 
-	
-
     apply plugin: 'docbook'
-    
+
     docbookHtmlSingle.stylesheet = new File(projectDir, 'docs/src/reference/resources/xsl/html-single-custom.xsl')
     [docbookHtml, docbookFoPdf, docbookHtmlSingle]*.sourceFileName = 'index.xml'
     [docbookHtml, docbookFoPdf, docbookHtmlSingle]*.sourceDirectory = new File(projectDir, 'docs/src/reference/docbook')
@@ -87,12 +85,12 @@ task wrapper(type: Wrapper) {
 //    docbookFoPdf.admonGraphicsPath = "${imagesDir}/"
     docbookFoPdf.imgSrcPath = "${projectDir}/docs/reference/resources/"
 
-//    spec = copySpec {
-//        into ('reference') {
-//            from("$buildDir/docs")
-//            from("$projectDir/src/reference/resources")
-//        }
-//        into ('reference/images') {
-//            from (imagesDir)
-//        }
-//    }
+    spec = copySpec {
+        into ('reference') {
+            from("$buildDir/docs")
+            from("$projectDir/src/reference/resources")
+        }
+        into ('reference/images') {
+            from (imagesDir)
+        }
+    }
