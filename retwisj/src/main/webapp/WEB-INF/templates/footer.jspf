@@ -3,13 +3,13 @@
 	  <div class="footer">
 	    <hr/>
 	    <p>
-	  	<span><a href="<c:url value="/"/>"><fmt:message key="home"/></a></span> | <span><fmt:message key="lang"/> (<a href="?lang=en">EN</a> | <a href="?lang=es">ES</a> | <a href="?lang=ro">RO</a> | <a href="?lang=cn">CN</a>)</span>
+	  	<span><a href="<c:url value="/"/>"><fmt:message key="home"/></a></span> | 
+	  	<a href="http://static.springsource.org/spring-data/data-keyvalue/examples/retwisj/current/"><fmt:message key="docs"/></a> | <span><fmt:message key="lang"/> (<a href="?lang=en">EN</a> | <a href="?lang=es">ES</a> | <a href="?lang=ro">RO</a> | <a href="?lang=cn">CN</a>)</span>
 	    </p>
 	    <p>&nbsp;</p>
 	    <p>
-	        Retwis-Java is a simple Twitter clone written in Java and Spring Data to show off 
-	        the <a href="http://redis.io">Redis key-value database</a>.
-	        The code is on open-source and available on <a href="https://github.com/SpringSource/spring-data-keyvalue-examples">Github</a>.
+	        RetwisJ is a simple Twitter clone written in Java using <a href="https://github.com/SpringSource/spring-data-keyvalue">Spring Data</a> and <a href="http://redis.io">Redis</a>  key-value database.
+	        The code is open-source and available on <a href="https://github.com/SpringSource/spring-data-keyvalue-examples">Github</a>.
 		</p>
         <p></p>
         <p><img src="<c:url value="/static/images/springsource-logo.png"/>" alt="Sponsored by SpringSource"/></p>	        

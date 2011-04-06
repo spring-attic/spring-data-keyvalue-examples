@@ -1,5 +1,5 @@
 // used for artifact names, building doc upload urls, etc.
-description = 'Spring Data Key Value Examples - Redis Twitter'
+description = 'Spring Data Key Value Examples - RetwisJ'
 abbreviation = 'DATAKV'
 
 apply plugin: 'base'
@@ -13,7 +13,7 @@ group = 'org.springframework.data'
 
 sourceCompatibility = 1.6
 version = '1.0.0.BUILD-SNAPSHOT'
-archivesBaseName = "retwis-java"
+archivesBaseName = "retwisj"
 
 buildscript {
     repositories {
@@ -48,7 +48,9 @@ dependencies {
 	compile "org.slf4j:slf4j-api:$slf4jVersion"
 	compile "org.slf4j:jcl-over-slf4j:$slf4jVersion"
 	runtime "log4j:log4j:$log4jVersion"
-	runtime "org.slf4j:slf4j-log4j12:$slf4jVersion"
+	compile "org.codehaus.jackson:jackson-core-asl:$jacksonVersion"
+	compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
+	compile "javax.servlet:com.springsource.javax.servlet.jsp.jstl:1.2.0"
 	compile "org.springframework.data:spring-data-redis:$springDataKVVersion"
 	compile "org.springframework:spring-webmvc:$springVersion"
 	compile "javax.inject:com.springsource.javax.inject:1.0.0"
@@ -70,6 +72,10 @@ ideaProject {
 
 task wrapper(type: Wrapper) {
     gradleVersion = '0.9.2'
+}
+
+war {
+  archiveName = baseName + "." + extension
 }
 
     apply plugin: 'docbook'
