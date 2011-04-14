@@ -7,7 +7,7 @@ As the name implies, the **Key Value** modules provides integration with key val
 
 Example List
 ------------
-RetwisJ - A Java, Spring Data port of [Retwis](http://redis.io/topics/twitter-clone). Documentation available [here](http://static.springsource.org/spring-data/data-keyvalue/examples/retwisj/current/)
+RetwisJ - A Java, Spring Data port of [Retwis](http://redis.io/topics/twitter-clone). Documentation available [here](http://static.springsource.org/spring-data/data-keyvalue/examples/retwisj/current/). Live instance on [CloudFoundry](http://www.cloudfoundry.com/) [here](http://retwisj.cloudfoundry.com/)
 
 Contributing
 ------------
