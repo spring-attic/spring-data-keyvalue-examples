@@ -23,6 +23,8 @@ buildscript {
             addArtifactPattern 'http://cloud.github.com/downloads/costin/gradle-stuff/[organization].[module]-[revision].[ext]'
         }
         mavenCentral()
+        mavenRepo name: "springsource-org-release", urls: "http://repository.springsource.com/maven/bundles/release"
+        mavenRepo name: "springsource-org-external", urls: "http://repository.springsource.com/maven/bundles/external"
     }
 
     dependencies {
@@ -62,6 +64,8 @@ dependencies {
 	testCompile "junit:junit:$junitVersion"
 	testCompile "org.springframework:spring-test:$springVersion"
 	testCompile "org.mockito:mockito-all:$mockitoVersion"
+	// CloudFoundry artifact
+	runtime "org.cloudfoundry:cloudfoundry-runtime:0.6.0"
 }
 
 ideaProject {
