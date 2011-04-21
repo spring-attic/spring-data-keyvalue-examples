@@ -64,8 +64,6 @@ dependencies {
 	testCompile "junit:junit:$junitVersion"
 	testCompile "org.springframework:spring-test:$springVersion"
 	testCompile "org.mockito:mockito-all:$mockitoVersion"
-	// CloudFoundry artifact
-	runtime "org.cloudfoundry:cloudfoundry-runtime:0.6.0"
 }
 
 ideaProject {
