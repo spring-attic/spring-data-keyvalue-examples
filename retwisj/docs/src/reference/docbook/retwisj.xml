@@ -248,12 +248,12 @@
             </row>          
             <row>
               <entry><literal>uid:1:followers</literal></entry>
-              <entry>list</entry>
+              <entry>set</entry>
               <entry>{2}</entry>
             </row>
             <row>
               <entry><literal>uid:1:following</literal></entry>
-              <entry>list</entry>
+              <entry>set</entry>
               <entry>{1}</entry>
             </row>
          </tbody>
@@ -326,13 +326,13 @@
             </row>          
             <row>
               <entry><literal>uid:1:followers</literal></entry>
-              <entry>list</entry>
+              <entry>set</entry>
               <entry>{2}</entry>
               <entry>Followers for the user 1 (springrod)</entry>
             </row>
             <row>
               <entry><literal>uid:2:following</literal></entry>
-              <entry>list</entry>
+              <entry>set</entry>
               <entry>{1}</entry>
               <entry>Users followed by user 2 (costinl)</entry>
             </row>          
