@@ -10,9 +10,9 @@ apply plugin: "maven"
 apply plugin: 'war'	
 
 group = 'org.springframework.data'
+version = "$springDataRedisTwitterVersion"
 
 sourceCompatibility = 1.6
-version = '1.0.0.BUILD-SNAPSHOT'
 archivesBaseName = "retwisj"
 
 buildscript {

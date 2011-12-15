@@ -68,7 +68,7 @@ public class WebUtils {
 		}
 
 		if (elapsed < 525600) {
-			return "time.months" + (elapsed / 43200);
+			return "time.months#" + (elapsed / 43200);
 		}
 
 		if (elapsed < 1051199) {
