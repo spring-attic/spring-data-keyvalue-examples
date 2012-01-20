@@ -47,37 +47,6 @@
 	</listener>
 
 	<!--
-		Defines the 'default' servlet (usually for service static resources).
-		Uncomment this in containers (GlassFish) that do not declare this 
-		implicit definition out of the box, or change the name of the servlet mapping 
-		below to the appropriate one.
-		
-	<servlet>
-		<servlet-name>default</servlet-name>
-		<servlet-class>org.apache.catalina.servlets.DefaultServlet</servlet-class>
-		<init-param>
-			<param-name>debug</param-name>
-			<param-value>0</param-value>
-		</init-param>
-		<init-param>
-			<param-name>listings</param-name>
-			<param-value>false</param-value>
-		</init-param>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
-	-->
-	<!--
-	 - Map static resources to the default servlet
-	 - examples:
-	 -     http://localhost:8080/static/images/retwis.png
-	 -     http://localhost:8080/static/styles/retwis.css
-	-->
-	<servlet-mapping>
-		<servlet-name>default</servlet-name>
-		<url-pattern>/static/*</url-pattern>
-	</servlet-mapping>
-	
-	<!--
 		- Servlet that dispatches request to registered handlers (Controller implementations).
 		- Has its own application context, by default defined in "{servlet-name}-servlet.xml",
 		- i.e. "retwis-servlet.xml".
