@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <chapter xmlns="http://docbook.org/ns/docbook" version="5.0"  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" xml:id="retwisj">
-  <title>Retwis Tutorial</title>
+  <title>Retwis-J Tutorial</title>
   
-  <para>The Spring Data Key-Value RetwisJ sample project show-cases a simple, Twitter-like clone built on top of Redis using Spring Data Key Value.
+  <para>The Spring Data Redis - Retwis-J sample project show-cases a simple, Twitter-like clone built on top of Redis using Spring Data Redis.
   It is inspired by the original Redis example, <ulink url="http://redis.io/topics/twitter-clone">Retwis</ulink>. In short, it demos a simple, social-like messaging service
   based entirely on Redis.
 	</para>
@@ -14,8 +14,8 @@
     <para>To succesfully build and run RetwisJ, one needs:</para>
     <itemizedlist>
       <listitem>JDK 6.0</listitem>
-      <listitem>Redis 2.2.x (Redis 2.0.x should workd as well)</listitem>
-      <listitem>Spring Data Key Value 1.0 M3</listitem>
+      <listitem>Redis 2.4.x (Redis 2.2.x/2.0.x should work as well)</listitem>
+      <listitem>Spring Data Key Value 1.0 or higher</listitem>
       <listitem>A servlet 2.4 container (such as Tomcat 6) </listitem>
     </itemizedlist>
     

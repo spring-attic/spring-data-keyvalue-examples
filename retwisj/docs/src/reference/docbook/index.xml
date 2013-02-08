@@ -5,10 +5,12 @@
     xmlns:xlink="http://www.w3.org/1999/xlink">
 
     <bookinfo>
-        <title>Spring Data Key-Value Retwis Sample - Reference Documentation</title>
-        <titleabbrev>Retwis-J${version}</titleabbrev>
+        <title>Spring Data Redis - Retwis-J</title>
+        <titleabbrev>Retwis-J</titleabbrev>
+        <!--
         <releaseinfo>${version}</releaseinfo>
-        <productname>Spring Data Key-Value Retwis Sample</productname>
+        -->
+        <productname>Retwis-J</productname>
 
         <authorgroup>
             <author>

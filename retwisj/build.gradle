@@ -1,12 +1,20 @@
-// used for artifact names, building doc upload urls, etc.
-description = 'Spring Data Key Value Examples - RetwisJ'
-abbreviation = 'DATAKV'
+buildscript {
+    repositories {
+        maven { url 'http://repo.springsource.org/plugins-release' }
+    }
+    dependencies {
+        classpath 'org.springframework.build.gradle:bundlor-plugin:0.1.2'
+        classpath 'org.springframework.build.gradle:docbook-reference-plugin:0.2.4'
+    }
+}
 
-apply plugin: 'base'
+description = 'Retwis-J'
+group = 'org.springframework.data'
+
 apply plugin: "java"
 apply plugin: 'eclipse'
 apply plugin: 'idea'
-apply plugin: "maven"
+apply plugin: 'docbook-reference'
 apply plugin: 'war'	
 
 group = 'org.springframework.data'
@@ -15,35 +23,10 @@ version = "$springDataRedisTwitterVersion"
 sourceCompatibility = 1.6
 archivesBaseName = "retwisj"
 
-buildscript {
-    repositories {
-        add(new org.apache.ivy.plugins.resolver.URLResolver()) {
-            name = "GitHub"
-            addIvyPattern 'http://cloud.github.com/downloads/costin/gradle-stuff/[organization].[module]-[artifact]-[revision].[ext]'
-            addArtifactPattern 'http://cloud.github.com/downloads/costin/gradle-stuff/[organization].[module]-[revision].[ext]'
-        }
-        mavenCentral()
-        mavenRepo name: "springsource-org-release", urls: "http://repository.springsource.com/maven/bundles/release"
-        mavenRepo name: "springsource-org-external", urls: "http://repository.springsource.com/maven/bundles/external"
-    }
-
-    dependencies {
-        classpath 'org.springframework:gradle-stuff:0.1-20110404'
-        classpath 'net.sf.docbook:docbook-xsl:1.75.2:ns-resources@zip'
-    }
-}
 
 repositories {
-  mavenLocal()
-  mavenCentral()
-	mavenRepo name: "ext-snapshots", urls: "http://springframework.svn.sourceforge.net/svnroot/springframework/repos/repo-ext/"
-  // Public Spring artefacts
-  mavenRepo name: "springsource-org-release", urls: "http://repository.springsource.com/maven/bundles/release"
-  mavenRepo name: "springsource-org-external", urls: "http://repository.springsource.com/maven/bundles/external"
-  mavenRepo name: "spring-release", urls: "http://maven.springframework.org/release"
-  mavenRepo name: "spring-milestone", urls: "http://maven.springframework.org/milestone"
-  mavenRepo name: "spring-snapshot", urls: "http://maven.springframework.org/snapshot"
-  
+  maven { url "http://repo.springsource.org/libs-snapshot" }
+  maven { url "http://repo.springsource.org/plugins-release" }
 }
 
 dependencies {
@@ -69,41 +52,17 @@ dependencies {
 	testCompile "org.mockito:mockito-all:$mockitoVersion"
 }
 
-ideaProject {
-	withXml { provider ->
-		provider.node.component.find { it.@name == 'VcsDirectoryMappings' }.mapping.@vcs = 'Git'
-	}
-}
-
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.0-milestone-3'
+    description = 'Generates gradlew[.bat] scripts'
+    gradleVersion = '1.2'
 }
 
 war {
   archiveName = baseName + "." + extension
 }
 
-    apply plugin: 'docbook'
-
-    docbookHtmlSingle.stylesheet = new File(projectDir, 'docs/src/reference/resources/xsl/html-single-custom.xsl')
-    [docbookHtml, docbookFoPdf, docbookHtmlSingle]*.sourceFileName = 'index.xml'
-    [docbookHtml, docbookFoPdf, docbookHtmlSingle]*.sourceDirectory = new File(projectDir, 'docs/src/reference/docbook')
-
-    docbookHtml.stylesheet = new File(projectDir, 'docs/src/reference/resources/xsl/html-custom.xsl')
-    docbookHtmlSingle.stylesheet = new File(projectDir, 'docs/src/reference/resources/xsl/html-single-custom.xsl')
-    docbookFoPdf.stylesheet = new File(projectDir, 'docs/src/reference/resources/xsl/pdf-custom.xsl')
-    def imagesDir = new File(projectDir, 'docs/src/reference/resources/images');
-//    docbookFoPdf.admonGraphicsPath = "${imagesDir}/"
-    docbookFoPdf.imgSrcPath = "${projectDir}/docs/reference/resources/"
-
-    spec = copySpec {
-        into ('reference') {
-            from("$buildDir/docs")
-            from("$projectDir/src/reference/resources")
-        }
-        into ('reference/images') {
-            from (imagesDir)
-        }
-    }
+reference {
+    sourceDir = file('docs/src/reference/docbook')
+}
     
 defaultTasks 'build'
