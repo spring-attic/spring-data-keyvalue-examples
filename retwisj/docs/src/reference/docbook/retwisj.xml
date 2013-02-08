@@ -15,7 +15,7 @@
     <itemizedlist>
       <listitem>JDK 6.0</listitem>
       <listitem>Redis 2.4.x (Redis 2.2.x/2.0.x should work as well)</listitem>
-      <listitem>Spring Data Key Value 1.0 or higher</listitem>
+      <listitem>Spring Data Redis 1.0 or higher</listitem>
       <listitem>A servlet 2.4 container (such as Tomcat 6) </listitem>
     </itemizedlist>
     
