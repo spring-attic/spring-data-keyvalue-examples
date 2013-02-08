@@ -18,6 +18,7 @@
     	<link rel="stylesheet" href="/static/styles/blueprint/ie.css" type="text/css" media="screen, projection"/>
   	  <![endif]-->
   	  <link rel="stylesheet" href="<c:url value="/static/styles/custom.css"/>" type="text/css" media="screen, projection"/> 
+  	  <link rel="icon" type="image/x-ico" href="<c:url value="/static/images/favicon.ico"/>">
 	  <title>Retwis-J :: a Spring Data Redis demonstration</title>	
 	</head>
 
