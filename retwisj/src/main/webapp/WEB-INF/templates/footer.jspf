@@ -11,7 +11,6 @@
 	        Retwis-J is a simple Twitter clone written in Java using <a href="http://github.com/SpringSource/spring-data/redis">Spring Data</a> and <a href="http://redis.io">Redis</a>.
 	        The code is open-source and available on <a href="https://github.com/SpringSource/spring-data-keyvalue-examples">Github</a>.
 		</p>
-        <p></p>
         <p>Follow the team on Twitter: <a href="http://twitter.com/costinl">Costin</a>, <a href="http://twitter.com/markpollack">Mark</a></p>
         <p><a href="http://twitter.com/springsource"><img src="<c:url value="/static/images/springsource-logo.png"/>" alt="Sponsored by SpringSource"/></a></p>	        
 	  </div>
