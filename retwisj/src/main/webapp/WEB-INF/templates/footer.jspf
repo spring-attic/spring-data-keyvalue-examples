@@ -8,7 +8,7 @@
 	    </p>
 	    <p>&nbsp;</p>
 	    <p>
-	        RetwisJ is a simple Twitter clone written in Java using <a href="https://github.com/SpringSource/spring-data-keyvalue">Spring Data</a> and <a href="http://redis.io">Redis</a>  key-value database.
+	        Retwis-J is a simple Twitter clone written in Java using <a href="https://github.com/SpringSource/spring-data/redis">Spring Data</a> and <a href="http://redis.io">Redis</a>.
 	        The code is open-source and available on <a href="https://github.com/SpringSource/spring-data-keyvalue-examples">Github</a>.
 		</p>
         <p></p>
