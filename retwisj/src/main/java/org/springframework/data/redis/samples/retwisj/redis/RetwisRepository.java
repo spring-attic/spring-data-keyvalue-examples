@@ -131,7 +131,7 @@ public class RetwisRepository {
 	}
 
 	public Collection<String> newUsers(Range range) {
-		return users.range(range.being, range.end);
+		return users.range(range.begin, range.end);
 	}
 
 	public void post(String username, WebPost post) {
@@ -341,7 +341,7 @@ public class RetwisRepository {
 		final String time = "time";
 
 		SortQuery<String> query = SortQueryBuilder.sort(key).noSort().get(pidKey).get(pid + uid).get(pid + content).get(
-				pid + replyPid).get(pid + replyUid).get(pid + time).limit(range.being, range.end).build();
+				pid + replyPid).get(pid + replyUid).get(pid + time).limit(range.begin, range.end).build();
 		BulkMapper<WebPost, String> hm = new BulkMapper<WebPost, String>() {
 			@Override
 			public WebPost mapBulk(List<String> bulk) {
