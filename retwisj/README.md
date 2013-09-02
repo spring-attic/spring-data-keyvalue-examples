@@ -3,7 +3,6 @@ Spring Data - Redis Twitter Example
 
 An improved Java implementation of the [Redis Twitter Clone](http://redis.io/topics/twitter-clone) using Spring Data. Tutorial available [here](http://static.springsource.org/spring-data/data-keyvalue/examples/retwisj/current/)
 
-Live instance available on [CloudFoundry](http://www.cloudfoundry.com/) [here](http://retwisj.cloudfoundry.com/)
 
 Build
 -----
