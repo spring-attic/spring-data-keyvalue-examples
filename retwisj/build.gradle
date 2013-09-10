@@ -35,6 +35,7 @@ dependencies {
 	compile "org.slf4j:jcl-over-slf4j:$slf4jVersion"
 	runtime "org.slf4j:slf4j-log4j12:$slf4jVersion"
 	runtime "log4j:log4j:$log4jVersion"
+	compile "redis.clients:jedis:2.1.0"
 	compile "org.codehaus.jackson:jackson-core-asl:$jacksonVersion"
 	compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
 	compile "javax.servlet:com.springsource.javax.servlet.jsp.jstl:1.2.0"
