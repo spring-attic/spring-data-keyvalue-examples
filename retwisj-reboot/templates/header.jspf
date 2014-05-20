@@ -1,0 +1,51 @@
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+<%@page import="org.springframework.data.redis.samples.retwisj.RetwisSecurity"%>
+
+<!-- Retwis :: a Spring Data Redis Framework demonstration -->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+	<head>
+	  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	  <meta http-equiv="Pragma" content="no-cache">
+	  <link rel="stylesheet" href="<c:url value="/static/styles/screen.css"/>" type="text/css" media="screen, projection"/>
+	  <link rel="stylesheet" href="<c:url value="/static/styles/print.css"/>" type="text/css" media="print"/> 
+	  <!--[if lt IE 8]>
+    	<link rel="stylesheet" href="/static/styles/blueprint/ie.css" type="text/css" media="screen, projection"/>
+  	  <![endif]-->
+  	  <link rel="stylesheet" href="<c:url value="/static/styles/custom.css"/>" type="text/css" media="screen, projection"/> 
+  	  <link rel="icon" type="image/x-ico" href="<c:url value="/static/images/favicon.ico"/>">
+	  <title>Retwis-J :: a Spring Data Redis demonstration</title>	
+	</head>
+
+    <body>
+      <div class="container">
+      	  <div class="header">
+      	  	  <div class="span-15 prepend-1">
+      	  	     <h2 class="alt"><a href="<c:url value="/"/>"">Retwis-J</a></h2>
+      	  	  </div>
+			  <div class="span-8 last right-align">
+			    <% 
+			    	pageContext.setAttribute("loggedIn", RetwisSecurity.isSignedIn(), PageContext.PAGE_SCOPE);
+			    	pageContext.setAttribute("loggedUser", RetwisSecurity.getName(), PageContext.PAGE_SCOPE); 
+			    %>
+			    <c:if test="${loggedIn}">
+			    	<a href="<c:url value="/!${loggedUser}"/>"><fmt:message key="home"/></a> |
+			    	<a href="<c:url value="/!${loggedUser}/mentions"/>">@${loggedUser}</a> |
+			    	<a href="<c:url value="/logout"/>"><fmt:message key="logout"/></a> |
+			    	<a href="<c:url value="/timeline"/>"><fmt:message key="timeline"/></a>
+			    </c:if>
+				<c:if test="${!loggedIn}">
+<!--  				 <div class="span-7 last" id="rightcol"> -->
+				  <a href="signIn"><fmt:message key="signin"/></a>
+				  <!-- </div> -->
+				</c:if>
+			  </div>
+			  <hr/>
+		  </div>
+		  <div>
+    

@@ -1,0 +1,34 @@
+<div class="span-7 last" id="rightcol">
+  <c:if test="${!empty in_common}">
+  	 <div class="span-7 box">
+        <h4><fmt:message key="follow.both"/>:</h4>
+		<c:forEach var="c" items="${in_common}">
+		   <ul class="user-list">
+		     <a href="!${c}"/>${c}</a>
+		   </ul>
+		</c:forEach>
+     </div>
+  </c:if>
+  <div class="box">
+  	<h4><c:choose><c:when test="${fn:length(followers) eq 1}"><fmt:message key="follower"/></c:when>
+  	<c:otherwise><fmt:message key="followers"/>: ${fn:length(followers)}</c:otherwise>
+  	</c:choose></h4>
+
+   <ul class="user-list">
+	<c:forEach var="f" items="${followers}">
+	     <li><a href="!${f}"/>${f}</a></li>
+	</c:forEach>
+	</ul>
+	<c:if test="${more_followers}"><fmt:message key="and.more"/></c:if>
+  </div>
+  <div class="box">
+  	<h4><fmt:message key="following"/>: ${fn:length(following)}</h4>
+
+    <ul class="user-list">
+	<c:forEach var="f" items="${following}">
+       <li><a href="!${f}"/>${f}</a></li>
+	</c:forEach>
+    </ul>
+	<c:if test="${more_following}"><fmt:message key="and.more"/></c:if>
+  </div>
+</div>
