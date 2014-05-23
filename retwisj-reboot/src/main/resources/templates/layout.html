@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
+<head>
+  <title>CLOUT :: Pivotal Cloud Foundry Twitter Clone</title>
+  <link rel="stylesheet" th:href="@{/styles/custom.css}" href="../../styles/custom.css" type="text/css" media="screen,projection" />
+  <link rel="stylesheet" th:href="@{/styles/screen.css}" href="../../styles/custom.css" type="text/css" media="screen,projection" />
+  <link rel="icon" type="image/x-ico" th:href="@{/images/favicon.ico}" href="../../images/favicon.ico" />
+</head>
+<body th:with="loggedIn=${T(org.example.retwisj.RetwisSecurity).isSignedIn()},loggedUser=${T(org.example.retwisj.RetwisSecurity).name}">
+	<div class="container">
+		<div th:replace="fragments/header :: header">
+			Login/Logout
+		</div>
+		<div layout:fragment="content">
+			dynamic content pane
+		</div>
+		<div th:replace="fragments/footer :: footer">
+			&copy; 2014 Spring by Pivotal.
+		</div>
+	</div>
+</body>
+</html>

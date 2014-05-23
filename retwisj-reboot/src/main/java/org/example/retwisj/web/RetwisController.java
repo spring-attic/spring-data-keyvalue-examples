@@ -56,16 +56,16 @@ public class RetwisController {
 		return timeline(page, model);
 	}
 
-	@RequestMapping("/signUp")
+	@RequestMapping(value = "/signUp")
 	public String signUp(String name, String pass, String pass2, Model model, HttpServletResponse response) {
 		if (retwis.isUserValid(name)) {
 			model.addAttribute("errorduplicateuser", Boolean.TRUE);
-			return "signin";
+			return "home/notSignedIn";
 		}
 
 		if (!StringUtils.hasText(pass) || !StringUtils.hasText(pass2) || !pass.equals(pass2)) {
 			model.addAttribute("errormatch", Boolean.TRUE);
-			return "signin";
+			return "home/notSignedIn";
 		}
 
 		String auth = retwis.addUser(name, pass);
@@ -111,6 +111,7 @@ public class RetwisController {
 		if (RetwisSecurity.isSignedIn()) {
 			model.addAttribute("replyTo", replyto);
 			model.addAttribute("replyPid", replypid);
+			model.addAttribute("loggedUser", RetwisSecurity.getName());
 
 			if (!targetUid.equals(RetwisSecurity.getUid())) {
 				model.addAttribute("also_followed", retwis.alsoFollowed(RetwisSecurity.getUid(), targetUid));
@@ -129,7 +130,7 @@ public class RetwisController {
 		model.addAttribute("posts", (RetwisSecurity.isUserSignedIn(targetUid) ? retwis.getTimeline(targetUid, range)
 				: retwis.getPosts(targetUid, range)));
 
-		return "home";
+		return "home/home";
 	}
 
 	@RequestMapping(value = "/!{name}", method = RequestMethod.POST)
@@ -181,7 +182,7 @@ public class RetwisController {
 		model.addAttribute("moreposts", retwis.hasMoreTimeline(range));
 		model.addAttribute("posts", retwis.timeline(range));
 		model.addAttribute("users", retwis.newUsers(new Range()));
-		return "timeline";
+		return "home/timeline";
 	}
 
 	@RequestMapping("/logout")
@@ -217,4 +218,5 @@ public class RetwisController {
 		// model.addAttribute("nodatatype", ex.isPost() ? "nodata.post" : "nodata.user");
 		return "nodata";
 	}
+
 }
