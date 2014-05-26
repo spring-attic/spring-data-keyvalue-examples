@@ -16,11 +16,12 @@
 			<!-- reply connection -->
 			<span th:if="${p.replyPid != ''}" >
 				&nbsp;-&nbsp;
-				<a th:text="${'in reply to: '+p.replyTo}" th:href="@{'/status'(pid=${p.replyPid})}">Reply To</a>		
+				<a th:text="#{inreplyto} +' '+${p.replyTo}" th:href="@{'/status'(pid=${p.replyPid})}">Reply To</a>		
 			</span>
 			&nbsp;-&nbsp;
 			<a th:if="${loggedIn}" th:text="#{reply}" th:href="@{${'/!'.concat(loggedUser)}(replyto=${p.name},replypid=${p.pid})}"></a>
 		</p>
 	</div>
+	<hr />
 </body>
 </html>

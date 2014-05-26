@@ -7,22 +7,6 @@
 <body>
 	<div layout:fragment="content">
 		<div class="span-11 box">
-			<h2 th:text="signin">signin</h2>
-			<form action="#" th:action="@{/signIn}" method="post">
-				<table>
-					<tr>
-						<td><span th:text="#{username}"></span></td>
-						<td><input name="name" /></td>
-					</tr>
-					<tr>
-						<td><span th:text="#{password}"></span></td>
-						<td><input type="password" name="pass" /></td>
-					</tr>
-				</table>
-				<input type="submit" value="signin" />
-			</form>
-		</div>
-		<div class="span-11 box">
 			<h2 th:text="#{signup}">signup</h2>
 			<form action="#" th:action="@{/signUp}" method="post">
 				<table>

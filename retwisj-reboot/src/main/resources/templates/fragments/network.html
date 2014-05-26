@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
+<head>
+</head>
+<body>
+<div class="span-7 last" id="rightcol" th:fragment="network" >
+  <div th:if="${loggedUser != name}" class="box">
+		<a th:if="${follows}" th:href="@{${'/!' + name + '/stopfollowing'}}" th:text="#{follow.stop}"></a>
+		<a th:if="${!follows}" th:href="@{${'/!' + name + '/follow'}}" th:text="#{follow}"></a>
+  </div>
+  <div th:if="${!T(org.springframework.util.CollectionUtils).isEmpty(in_common)}" class="box">
+  	<h4 th:text="#{follow.both} + ':'"></h4>
+  	<ul class="user-list" th:each="c : ${in_common}">
+  		<li><a href="/" th:href="@{${'/!'.concat(c)}}" th:text="${c}"></a></li>
+  	</ul>
+  </div>
+  <div class="box">
+  	<h4 th:text="#{followers} + ' ' + ${followers.size()}"></h4>
+  	<ul class="user-list>">
+  		<li th:each="f : ${followers}">
+  			<a href="/" th:href="@{${'/!'.concat(f)}}" th:text="${f}"></a>
+  		</li>
+  	</ul>
+  	<span th:if="${more_followers}" th:text="#{and.more}"></span>
+  </div>
+  <div class="box">
+  	<h4 th:text="#{following} +' ' + ${following.size()}"></h4>
+  	<ul class="user-list>">
+  		<li th:each="f : ${following}">
+  			<a href="/" th:href="@{${'/!'.concat(f)}}" th:text="${f}"></a>
+  		</li>
+  	</ul>
+  	<span th:if="${more_following}" th:text="#{and.more}"></span>
+  </div>
+  
+</div>
+</body>
+</html>

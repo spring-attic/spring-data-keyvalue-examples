@@ -197,7 +197,7 @@ public class RetwisController {
 	public String status(String pid, Model model) {
 		checkPost(pid);
 		model.addAttribute("posts", retwis.getPost(pid));
-		return "status";
+		return "home/status";
 	}
 
 	private void checkUser(String username) {
