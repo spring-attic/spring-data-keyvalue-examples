@@ -10,7 +10,7 @@
 			<span th:utext="${p.content}">Content</span>
 			<br />
 			<!-- link to post -->
-			<a href="#" th:href="@{'/status'(pid=${p.pid})}">
+			<a href="#" th:href="@{'/status'(pid=${p.pid})}" tweet:date="${p}">
 				add formatted date here
 			</a>
 			<!-- reply connection -->

@@ -85,7 +85,7 @@ public class RetwisController {
 			model.addAttribute("errorpass", Boolean.TRUE);
 		}
 		// go back to sign in screen
-		return "signin";
+		return "home/notSignedIn";
 	}
 
 	private void addAuthCookie(String auth, String name, HttpServletResponse response) {
