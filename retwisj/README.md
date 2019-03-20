@@ -1,12 +1,12 @@
 Spring Data - Redis Twitter Example
 ===================================
 
-An improved Java implementation of the [Redis Twitter Clone](http://redis.io/topics/twitter-clone) using Spring Data. Tutorial available [here](http://static.springsource.org/spring-data/data-keyvalue/examples/retwisj/current/)
+An improved Java implementation of the [Redis Twitter Clone](https://redis.io/topics/twitter-clone) using Spring Data. Tutorial available [here](https://docs.spring.io/spring-data/data-keyvalue/examples/retwisj/current/)
 
 
 Build
 -----
-The project creates a WAR file suitable for deployment in a Servlet 2.5 container (such as Tomcat). It uses [Gradle](http://gradle.org/) as a build system.
+The project creates a WAR file suitable for deployment in a Servlet 2.5 container (such as Tomcat). It uses [Gradle](https://gradle.org/) as a build system.
 Simply type:
 
       gradlew build

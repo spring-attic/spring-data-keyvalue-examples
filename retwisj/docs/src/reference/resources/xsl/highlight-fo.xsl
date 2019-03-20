@@ -5,7 +5,7 @@
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:fo="http://www.w3.org/1999/XSL/Format"
-                xmlns:xslthl="http://xslthl.sf.net"
+                xmlns:xslthl="http://xslthl.sourceforge.net/"
                 exclude-result-prefixes="xslthl"
                 version='1.0'>
 
