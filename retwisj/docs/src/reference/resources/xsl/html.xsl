@@ -5,7 +5,7 @@
 -->
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:fo="http://www.w3.org/1999/XSL/Format"
-                xmlns:xslthl="http://xslthl.sf.net"
+                xmlns:xslthl="http://xslthl.sourceforge.net/"
                 exclude-result-prefixes="xslthl"                
                 version="1.0">
                 
@@ -93,11 +93,11 @@
     <!-- let's have a Spring and I21 banner across the top of each page -->
     <xsl:template name="user.header.navigation">
         <div style="background-color:white;border:none;height:73px;border:1px solid black;">
-            <a style="border:none;" href="http://www.springframework.org/osgi/"
+            <a style="border:none;" href="https://www.springframework.org/osgi/"
                title="The Spring Framework - Spring Data">
                 <img style="border:none;" src="images/xdev-spring_logo.jpg"/>
             </a>
-            <a style="border:none;" href="http://www.SpringSource.com/" title="SpringSource - Spring from the Source">
+            <a style="border:none;" href="https://www.SpringSource.com/" title="SpringSource - Spring from the Source">
                 <img style="border:none;position:absolute;padding-top:5px;right:42px;" src="images/s2-banner-rhs.png"/>
             </a>
         </div>
