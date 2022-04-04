@@ -1,3 +1,5 @@
+# spring-data-keyvalue-examples is no longer actively maintained by VMware, Inc.
+
 Spring Data - Key Value - Examples
 ==================================
 
