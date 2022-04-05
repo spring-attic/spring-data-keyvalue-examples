@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
+<head>
+
+</head>
+<body>
+    <div th:fragment="header" class="header">
+		<div class="span-12 prepend-1">
+			<h2 class="alt">
+				<a th:href="@{/}" href="/">CLOUT</a>
+			</h2>
+		</div>
+		<div class="span-11 last right-align">
+			<span class="large" th:if="${loggedUser != null and loggedUser.equals(name)}" th:text="(#{welcome} +' ' + ${name})">Welcome</span>
+			<a th:if="${loggedIn}" th:href="@{/logout}" href="/logout" th:text="#{logout}">Logout</a>
+			<form th:if="${!loggedIn}" action="#" th:action="@{/signIn}" method="post">
+			  <input name="name" th:placeholder="#{username}"/>
+			  <input name="pass" type="password" th:placeholder="#{password}"/>
+			  <input type="submit" th:value="#{signin}" />
+			</form>
+			<a th:if="${!loggedIn}" th:href="@{signUp}" th:text="#{signup}">sign up</a>
+		</div>
+		<hr />
+	</div>
+</body>
+</html>

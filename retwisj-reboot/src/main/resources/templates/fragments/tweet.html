@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
+<head>
+</head>
+<body>
+	<div th:fragment="tweet" class="post">
+		<p>
+			<a class="user" href="#" th:href="@{${'/!'.concat(p.name)}}"><b><span th:text="${p.name}">User Name</span></b></a>
+			<span th:utext="${p.content}">Content</span>
+			<br />
+			<!-- link to post -->
+			<a href="#" th:href="@{'/status'(pid=${p.pid})}" tweet:date="${p}">
+				add formatted date here
+			</a>
+			<!-- reply connection -->
+			<span th:if="${p.replyPid != ''}" >
+				&nbsp;-&nbsp;
+				<a th:text="#{inreplyto} +' '+${p.replyTo}" th:href="@{'/status'(pid=${p.replyPid})}">Reply To</a>		
+			</span>
+			&nbsp;-&nbsp;
+			<a th:if="${loggedIn}" th:text="#{reply}" th:href="@{${'/!'.concat(loggedUser)}(replyto=${p.name},replypid=${p.pid})}"></a>
+		</p>
+	</div>
+	<hr />
+</body>
+</html>

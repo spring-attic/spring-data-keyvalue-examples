@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<head>
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="span-11 box">
+			<div th:if="${errorpass}" class="error">
+ 		    	<span th:text="#{error.pass}">Username password wrong.</span>
+			</div>
+			<h2 th:text="#{signup}">signup</h2>
+			<div th:if="${errorduplicateuser}" class="error">
+ 		    	<span th:text="#{error.duplicateuser}">Duplicate user</span>
+			</div>
+			<div th:if="${errormatch}" class="error">
+ 		    	<span th:text="#{error.match}">Match user</span>
+			</div>
+			
+			<form action="#" th:action="@{/signUp}" method="post">
+				<table>
+					<tr>
+						<td><span th:text="#{username}"></span></td>
+						<td><input name="name" /></td>
+					</tr>
+					<tr>
+						<td><span th:text="#{password}"></span></td>
+						<td><input type="password" name="pass" /></td>
+					</tr>
+					<tr>
+						<td><span th:text="#{password.again}"></span></td>
+						<td><input type="password" name="pass2" /></td>
+					</tr>
+				</table>
+				<input type="submit" value="signup" />
+			</form>
+		</div>
+	</div>
+</body>
+</html>

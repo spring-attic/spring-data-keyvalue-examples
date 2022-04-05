@@ -1,0 +1,30 @@
+a {
+  color: #D02B55;
+}
+
+body {
+  color: #555;
+}
+
+div.post p {
+    margin: 2px; 
+}
+
+.box {
+  padding: 10px;
+  background: rgba(208,43,85,0.15);
+  -moz-border-radius-bottomleft:5px;scr
+  -moz-border-radius-bottomright:5px;
+  -moz-border-radius-topleft:5px;
+  -moz-border-radius-topright:5px;
+}
+
+textarea {
+  height: 5em;
+  width: 500px;
+}
+
+.footer {
+  text-align: center;
+}
+

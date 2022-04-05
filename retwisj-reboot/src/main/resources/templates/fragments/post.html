@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
+<head>
+</head>
+<body>
+	<div th:if="${loggedIn}" th:fragment="postnew" id="updateform" class="box">
+		<form method="post" th:action="@{${'/!'.concat(loggedUser)}}">
+			<i th:switch="${replyTo}">
+				<span th:case="null" th:text="${loggedUser} + ', ' + #{wazza}">username</span>
+				<span th:case="*" th:text="#{replyto} + ' ' + ${replyTo}">reply to user</span>
+			</i>
+			<textarea name="content" rows="3" cols="60" th:text="${(T(org.springframework.util.StringUtils).hasText(replyTo)) ?('@'+replyTo):''}"></textarea>
+			<br />
+			<input type="hidden" name="replyTo" th:value="${replyTo}" />
+			<input type="hidden" name="replyPid" th:value="${replyPid}" /> 
+		    <input type="submit" th:value="#{update}"/>
+		</form>
+	</div>
+</body>
+</html>

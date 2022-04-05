@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
+<head>
+</head>
+<body>
+	<div th:fragment="footer" class="footer">
+		<hr />
+		<p>
+			<span><a th:href="@{/}" href="/" th:text="#{home}">home</a></span>
+			| <a href="http://static.springsource.org/spring-data/data-keyvalue/examples/retwisj/current/" th:text="#{docs}"></a>
+			| <span th:text="#{lang}"></span> 
+			(<a href="?lang=en" th:href="@{'/'(lang=en)}">EN</a> | <a href="?lang=es" th:href="@{'/'(lang=es)}">ES</a> | 
+			 <a href="?lang=ro" th:href="@{'/'(lang=ro)}">RO</a> | <a href="?lang=cn" th:href="@{'/'(lang=cn)}">CN</a>)
+		</p>
+		<p>&nbsp;</p>
+		<p>
+			Retwis-J is a simple Twitter clone written in Java using
+			<a href="http://github.com/spring-projects/spring-boot">Spring Boot</a>, 
+			 <a
+				href="http://github.com/spring-projects/spring-data-redis">Spring
+				Data</a> and <a href="http://redis.io">Redis</a>. The code is
+			open-source and available on <a
+				href="https://github.com/spring-projects/spring-data-keyvalue-examples">Github</a>.
+		</p>
+		<p>
+			Follow the team on Twitter: <a href="http://twitter.com/thomasdarimont">Thomas</a>
+			and <a href="http://twitter.com/stroblchristoph">Christoph</a>.
+		</p>
+		<p>
+			<a href="http://twitter.com/springcentral"> <img
+				src="../../static/images/springsource-logo.png"
+				th:src="@{/images/springsource-logo.png}" />
+			</a>
+		</p>
+	</div>
+</body>
+</html>

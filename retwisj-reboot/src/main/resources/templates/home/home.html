@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<head>
+</head>
+<body>
+<div layout:fragment="content">
+	<div th:replace="fragments/post">
+		new post widget
+	</div>
+	<br/>
+	<div id="posts" class="span-15 prepend-1 append-bottom">
+		<div th:each="p : ${posts}" th:include="fragments/tweet :: tweet"  class="post">
+		
+		</div>
+	</div>
+	<div th:replace="fragments/network :: network">
+	
+	</div>
+	
+</div>
+</body>
+</html>
